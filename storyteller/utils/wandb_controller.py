@@ -1,31 +1,50 @@
+import collections
 import os
 import shutil
+from collections import namedtuple
 
 import wandb as wandb
 
 
 class WandBSupport:
+    @staticmethod
+    def _check_field(spec: dict,
+                     field: str,
+                     field_type: type) -> None:
+        """
+        This function checks field existence and its type from specification written in form of dictionary.
+        :param spec:
+        :param field:
+        :param field_type:
+        :return: None
+        """
+        if field not in spec.keys():
+            raise KeyError(f"Missing Key: specification parameter must have '{field}'.")
+
+        if type(spec[field]) is not str:
+            raise TypeError(f"Wrong Type for Key: type for '{field}' is {type(spec['job_name'])}. "
+                            f"This must be {field_type}.")
+
+    def _check_spec(self, spec: dict) -> namedtuple:
+        # This function checks specification for wandb run object.
+        self._check_field(spec, 'job_name', str)
+        self._check_field(spec, 'job_desc', str)
+
+        return namedtuple('GenericDict', spec.keys())(**spec)
+
     def __init__(self,
-                 ver: str,
-                 run_type: str,
+                 specification: dict,
                  entity: str = 'wisdomify',
                  project: str = 'wisdomify'):
-        self.conf_json = load_conf()['versions'][ver]
-        self.config = self.conf_json['wandb']
-
-        self.job_name = f"{run_type}_{self.conf_json['exp_name']}"
-        self.job_desc = self.conf_json['exp_desc']
-
         # initialise wandb connection object.
+        self.specification = self._check_spec(specification)
+
         self.wandb_obj = wandb.init(
             entity=entity,
             project=project,
-            name=self.job_name,
-            notes=self.job_desc
+            name=self.specification.job_name,
+            notes=self.specification.job_desc
         )
-        self.logger = None
-
-        self.models = WandBModels(self)
         self.tmp_files = ['./wandb', './artifacts']
 
     def _get_artifact(self,
@@ -59,7 +78,7 @@ class WandBSupport:
     def create_artifact(name: str,
                         dtype: str,
                         desc: str,
-                        meta: str = None):
+                        meta: dict = None):
         # this function creates and returns new artifact
         return wandb.Artifact(name, type=dtype, description=desc, metadata=meta)
 
