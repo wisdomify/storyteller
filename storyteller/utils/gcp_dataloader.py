@@ -1,7 +1,13 @@
-from collections.abc import Iterator
+import itertools
+import os
+import shutil
+import zipfile
 
-from gcloud import storage
-from gcloud.storage import Blob
+from typing import Iterator, List
+
+from tqdm import tqdm
+from google.cloud import storage
+from google.cloud.storage import Blob
 
 
 class GCPStorage:
@@ -45,33 +51,80 @@ class GCPStorage:
             )
         ))
 
-    def download_directory(self, path: str, to: str):
-        blobs = self.get_item_list(sub_path=path, is_blob=True)
-        for blob in blobs:
-            filename = blob.name.replace('/', '_')
+    @staticmethod
+    def _create_local_dirs_of(blobs: Iterator[Blob], at: str) -> None:
+        """
+        path create for blobs download
+        :param blobs: target blobs
+        :param at: local dir for path creation
+        :return:
+        """
+        tmp_blobs = list(blobs)
+        at = at + '/' if at[-1] != '/' else at
+        dirs = sorted(
+            set(
+                map(
+                    lambda path_list: '/'.join(path_list[:-1]),
+                    map(
+                        lambda blob: blob.name.split('/'),
+                        tmp_blobs
+                    )
+                )
+            ),
+            key=lambda pth: len(pth)
+        )
+
+        for d in dirs:
+            target_dir = os.path.join(at, d)
             try:
-                blob.download_to_filename(to + filename)
-            except Exception as e:
-                raise IOError(f"Fail to download file: {blob}"
-                              f"Details: {e}")
+                os.makedirs(target_dir, exist_ok=True)
+            except OSError:
+                raise OSError(f"Creation of the directory failed: {target_dir}")
+            else:
+                print(f"Successfully created the directory: {target_dir}")
 
-    def download_file(self, file: str, to: str):
-        blob = self.get_item(file_path=file)
-
-        filename = blob.name.replace('/', '_')
+    def _download(self, blob: Blob, to: str):
         try:
-            blob.download_to_filename(to + filename)  # Download
+            with open(to + blob.name, 'wb') as f:
+                with tqdm.wrapattr(f, "write", total=blob.size) as file_obj:
+                    self.client.download_blob_to_file(blob, file_obj)
+
+            print(f"\nSuccessful download: {blob.name}")
+
         except Exception as e:
             raise IOError(f"Fail to download file: {blob}"
                           f"Details: {e}")
 
+    # @staticmethod
+    # def _unzip_file(blob: Blob, to: str):
+    #     target_file = os.path.join(to, blob.name)
+    #     try:
+    #         with zipfile.ZipFile(target_file, "r") as zip_ref:
+    #             zip_ref.extractall('/'.join(target_file.split('/')[:-1]))
+    #
+    #         shutil.rmtree(target_file)
+    #         print(f"\nSuccessful unzip: {target_file}")
+    #
+    #     except Exception as e:
+    #         raise IOError(f"Fail to unzip zipfile: {target_file}\n"
+    #                       f"Details: {e}")
+
+    def download(self, path: str, to: str) -> None:
+        if '.' in path.split('/')[-1]:
+            blobs = [self.get_item(file_path=path)]
+        else:
+            blobs = self.get_item_list(sub_path=path, is_blob=True)
+        dir_blobs, dl_blobs = itertools.tee(blobs)
+
+        self._create_local_dirs_of(dir_blobs, at=to)
+        for blob in dl_blobs:
+            if blob.name.split('/')[-1] == '.DS_Store':
+                continue
+
+            self._download(blob, to)
+            self._unzip_file(blob, to)
+
 
 if __name__ == '__main__':
     gcp_storage = GCPStorage('wisdomify')
-    res = gcp_storage.get_item_list('story/elastic')
-    print(res)
-    ess = list(gcp_storage.get_elastic_data_dirs())
-    print(ess)
-    gcp_storage.download_file('story/elastic/일반상식/01_triples_일반상식(N-Triple형식).zip', to='./')
-    # for r in res:
-    #     print(r)
+    gcp_storage.download('story/elastic/자유대화 음성(일반남녀)', to='./')
