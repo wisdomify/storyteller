@@ -100,9 +100,11 @@ class WandBSupport:
         # This function is used when user trying to add already saved file directly with file path
         return artifact.add_file(file_path)
 
-    def push(self) -> None:
+    def push(self, is_only_push: bool = False) -> None:
         self.wandb_obj.finish()
         wandb.finish()
 
-        for file in self.tmp_files:
-            shutil.rmtree(file)
+        if not is_only_push:
+            for file in self.tmp_files:
+                if os.path.exists(file):
+                    shutil.rmtree(file)
