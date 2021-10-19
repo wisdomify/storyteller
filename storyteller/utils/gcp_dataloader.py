@@ -95,21 +95,21 @@ class GCPStorage:
             raise IOError(f"Fail to download file: {blob}"
                           f"Details: {e}")
 
-    # @staticmethod
-    # def _unzip_file(blob: Blob, to: str):
-    #     target_file = os.path.join(to, blob.name)
-    #     try:
-    #         with zipfile.ZipFile(target_file, "r") as zip_ref:
-    #             zip_ref.extractall('/'.join(target_file.split('/')[:-1]))
-    #
-    #         shutil.rmtree(target_file)
-    #         print(f"\nSuccessful unzip: {target_file}")
-    #
-    #     except Exception as e:
-    #         raise IOError(f"Fail to unzip zipfile: {target_file}\n"
-    #                       f"Details: {e}")
+    @staticmethod
+    def _unzip_file(blob: Blob, to: str):
+        target_file = os.path.join(to, blob.name)
+        try:
+            with zipfile.ZipFile(target_file, "r") as zip_ref:
+                zip_ref.extractall('/'.join(target_file.split('/')[:-1]))
 
-    def download(self, path: str, to: str) -> None:
+            shutil.rmtree(target_file)
+            print(f"\nSuccessful unzip: {target_file}")
+
+        except Exception as e:
+            raise IOError(f"Fail to unzip zipfile: {target_file}\n"
+                          f"Details: {e}")
+
+    def download(self, path: str, to: str, unzip: bool) -> None:
         if '.' in path.split('/')[-1]:
             blobs = [self.get_item(file_path=path)]
         else:
@@ -122,7 +122,8 @@ class GCPStorage:
                 continue
 
             self._download(blob, to)
-            self._unzip_file(blob, to)
+            if unzip:
+                self._unzip_file(blob, to)
 
 
 if __name__ == '__main__':
