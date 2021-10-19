@@ -54,12 +54,12 @@ class ElasticController:
         :param info:
         :return:
         """
-
-        if not (bulk and (type(info) == list)):
-            raise ValueError("Invalid info: (bulk is True) info must be list of dictionary.")
-
-        if not (not bulk and (type(info) == dict)):
-            raise ValueError("Invalid info: (bulk is False) info must be dictionary .")
+        if bulk:
+            if type(info) != list:
+                raise ValueError("Invalid info: (bulk is True) info must be List of dictionary.")
+        else:
+            if type(info) != dict:
+                raise ValueError("Invalid info: (bulk is True) info must be List of dictionary.")
 
         if bulk:
             res = list()
