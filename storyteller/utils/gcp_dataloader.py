@@ -9,6 +9,8 @@ from tqdm import tqdm
 from google.cloud import storage
 from google.cloud.storage import Blob
 
+from copy import copy
+
 
 class GCPStorage:
     def __init__(self,
@@ -97,16 +99,26 @@ class GCPStorage:
 
     @staticmethod
     def _unzip_file(blob: Blob, to: str):
-        target_file = os.path.join(to, blob.name)
+        target_file = os.path.join(os.getcwd(), to, blob.name)
         try:
-            with zipfile.ZipFile(target_file, "r") as zip_ref:
-                zip_ref.extractall('/'.join(target_file.split('/')[:-1]))
+            with zipfile.ZipFile(target_file) as z:
+                for info in z.infolist():
+                    info.filename = info.orig_filename.encode('cp437').decode('euc-kr', 'ignore')
+                    if os.sep != "/" and os.sep in info.filename:
+                        info.filename = info.filename.replace(os.sep, "/")
+                    z.extract(info, path='/'.join(target_file.split('/')[:-1]))
 
-            shutil.rmtree(target_file)
-            print(f"\nSuccessful unzip: {target_file}")
+                    print(f"\nSuccessful unzip: {info.filename}")
 
         except Exception as e:
             raise IOError(f"Fail to unzip zipfile: {target_file}\n"
+                          f"Details: {e}")
+
+        try:
+            os.remove(target_file)
+
+        except Exception as e:
+            raise IOError(f"Fail to remove zipfile: {target_file}\n"
                           f"Details: {e}")
 
     def download(self, path: str, to: str, unzip: bool) -> None:
@@ -128,4 +140,5 @@ class GCPStorage:
 
 if __name__ == '__main__':
     gcp_storage = GCPStorage('wisdomify')
-    gcp_storage.download('story/elastic/자유대화 음성(일반남녀)', to='./')
+    gcp_storage.download('story/elastic/감성대화', to='./', unzip=True)
+
