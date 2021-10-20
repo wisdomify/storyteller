@@ -106,6 +106,8 @@ class GCPStorage:
                     info.filename = info.orig_filename.encode('cp437').decode('euc-kr', 'ignore')
                     if os.sep != "/" and os.sep in info.filename:
                         info.filename = info.filename.replace(os.sep, "/")
+                    info.filename = f"{target_file.split('/')[-1].split('.zip')[0]}_{info.filename}"
+
                     z.extract(info, path='/'.join(target_file.split('/')[:-1]))
 
                     print(f"\nSuccessful unzip: {info.filename}")
@@ -132,13 +134,16 @@ class GCPStorage:
         for blob in dl_blobs:
             if blob.name.split('/')[-1] == '.DS_Store':
                 continue
+            if '.zip' not in blob.name:
+                continue
 
             self._download(blob, to)
+
             if unzip:
                 self._unzip_file(blob, to)
 
 
 if __name__ == '__main__':
     gcp_storage = GCPStorage('wisdomify')
-    gcp_storage.download('story/elastic/감성대화', to='./', unzip=True)
+    gcp_storage.download('story/elastic/도서자료 요약/', to='./', unzip=True)
 
