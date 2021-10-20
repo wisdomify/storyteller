@@ -1,4 +1,5 @@
 import json
+from functools import reduce
 from typing import List, Dict, Union
 
 from elasticsearch import Elasticsearch
@@ -48,12 +49,18 @@ class ElasticController:
 
     def write(self,
               info: Union[List[Dict], Dict],
-              bulk: bool):
+              bulk: bool,
+              batch_size: int = None):
         """
+        :param batch_size:
         :param bulk:
         :param info:
         :return:
         """
+
+        if batch_size:
+            self.batch_size = batch_size
+
         if bulk:
             if type(info) != list:
                 raise ValueError("Invalid info: (bulk is True) info must be List of dictionary.")
@@ -78,7 +85,40 @@ class ElasticController:
                 r = self.elastic.bulk(index=self.index, doc_type='_doc', body=cur_docs)
                 res.append(r)
 
-            return res
+            res = list(map(
+                lambda case: {
+                    'success': case['index']['_shards']['successful'],
+                    'fail': case['index']['_shards']['failed'],
+                    'seq_no': case['index']['_seq_no'],
+                },
+                list(reduce(
+                    lambda r1, r2: r1 + r2,
+                    list(map(
+                        lambda r: r['items'],
+                        res
+                    ))
+                ))
+            ))
+
+            status = dict(
+                reduce(
+                    lambda i, j: {
+                        'success': i['success'] + j['success'],
+                        'fail': i['fail'] + j['fail'],
+                    },
+                    res
+                )
+            )
+
+            status['fail_seq'] = list(filter(
+                lambda i: i is not None,
+                map(
+                    lambda r: r['seq_no'] if r['fail'] != 0 else None,
+                    res
+                )
+            ))
+
+            return status
 
         else:
             return self.elastic.index(index=self.index, doc_type='_doc', document=info)
