@@ -103,6 +103,9 @@ class GCPStorage:
         try:
             with zipfile.ZipFile(target_file) as z:
                 for info in z.infolist():
+                    if '.nt' in info.filename:
+                        continue
+
                     info.filename = info.orig_filename.encode('cp437').decode('euc-kr', 'ignore')
                     if os.sep != "/" and os.sep in info.filename:
                         info.filename = info.filename.replace(os.sep, "/")
@@ -145,5 +148,5 @@ class GCPStorage:
 
 if __name__ == '__main__':
     gcp_storage = GCPStorage('wisdomify')
-    gcp_storage.download('story/elastic/도서자료 요약/', to='./', unzip=True)
+    gcp_storage.download('story/elastic/법률 지식베이스', './', unzip=True)
 
