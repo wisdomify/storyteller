@@ -1,4 +1,4 @@
 """
-for defining the docs and the indices to use.
+for defining Elasticsearch docs and the indices.
 """
 

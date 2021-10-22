@@ -7,6 +7,22 @@ import wandb as wandb
 
 
 class WandBSupport:
+
+    def __init__(self,
+                 specification: dict,
+                 entity: str = 'wisdomify',
+                 project: str = 'wisdomify'):
+        # initialise wandb connection object.
+        self.specification = self._check_spec(specification)
+
+        self.wandb_obj = wandb.init(
+            entity=entity,
+            project=project,
+            name=self.specification.job_name,
+            notes=self.specification.job_desc
+        )
+        self.tmp_files = ['./wandb', './artifacts']
+
     @staticmethod
     def _check_field(spec: dict,
                      field: str,
@@ -31,21 +47,6 @@ class WandBSupport:
         self._check_field(spec, 'job_desc', str)
 
         return namedtuple('GenericDict', spec.keys())(**spec)
-
-    def __init__(self,
-                 specification: dict,
-                 entity: str = 'wisdomify',
-                 project: str = 'wisdomify'):
-        # initialise wandb connection object.
-        self.specification = self._check_spec(specification)
-
-        self.wandb_obj = wandb.init(
-            entity=entity,
-            project=project,
-            name=self.specification.job_name,
-            notes=self.specification.job_desc
-        )
-        self.tmp_files = ['./wandb', './artifacts']
 
     def _get_artifact(self,
                       name: str,
