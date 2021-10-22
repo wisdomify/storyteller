@@ -8,7 +8,7 @@ import json
 
 
 class Reader:
-    def __call__(self) -> Generator[dict, None, None]:
+    def __iter__(self) -> Generator[dict, None, None]:
         """
         the
         [
@@ -43,7 +43,7 @@ class GKReader(Reader):
     """
     일반상식 데이터 리더.
     """
-    def __call__(self) -> Generator[dict, None, None]:
+    def __iter__(self) -> Generator[dict, None, None]:
         """
         :return: a list of samples
         """
@@ -61,7 +61,7 @@ class SCReader(Reader):
     """
     감성 대화 리더
     """
-    def __call__(self) -> Generator[dict, None, None]:
+    def __iter__(self) -> Generator[dict, None, None]:
         """
         :return:
         """
@@ -86,5 +86,5 @@ class DSReader(Reader):
     문서 요약 데이터 리더
     """
 
-    def __call__(self, *args, **kwargs) -> Generator[dict, None, None]:
+    def __iter__(self, *args, **kwargs) -> Generator[dict, None, None]:
         raise NotImplementedError
