@@ -1,6 +1,5 @@
 import json
 from typing import List, Dict, Union
-
 from elasticsearch import Elasticsearch
 
 

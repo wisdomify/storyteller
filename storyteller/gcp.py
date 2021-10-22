@@ -1,18 +1,17 @@
+"""
+gcp storage:
+https://console.cloud.google.com/storage/browser/wisdomify/story/elastic?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))&authuser=1&project=wisdomify-323515&prefix=&forceOnObjectsSortingFiltering=false
+"""
 import itertools
 import os
-import shutil
 import zipfile
-
-from typing import Iterator, List
-
+from typing import Iterator
 from tqdm import tqdm
 from google.cloud import storage
 from google.cloud.storage import Blob
 
-from copy import copy
 
-
-class GCPStorage:
+class GCP:
     def __init__(self,
                  bucket_name: str):
         self.bucket_name = bucket_name
@@ -99,10 +98,13 @@ class GCPStorage:
 
     @staticmethod
     def _unzip_file(blob: Blob, to: str):
-        target_file = os.path.join(os.getcwd(), to, blob.name)
+        target_file = os.path.join(to, blob.name)
         try:
             with zipfile.ZipFile(target_file) as z:
                 for info in z.infolist():
+                    if '.nt' in info.filename:
+                        continue
+
                     info.filename = info.orig_filename.encode('cp437').decode('euc-kr', 'ignore')
                     if os.sep != "/" and os.sep in info.filename:
                         info.filename = info.filename.replace(os.sep, "/")
@@ -141,9 +143,3 @@ class GCPStorage:
 
             if unzip:
                 self._unzip_file(blob, to)
-
-
-if __name__ == '__main__':
-    gcp_storage = GCPStorage('wisdomify')
-    gcp_storage.download('story/elastic/도서자료 요약/', to='./', unzip=True)
-
