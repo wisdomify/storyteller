@@ -3,11 +3,11 @@ from storyteller.readers import GKReader, SCReader
 
 
 def main():
-    for sample in GKReader():
-        print(sample)
+    for doc in GKReader():
+        print(doc.to_dict())
         break
-    for sample in SCReader():
-        print(sample)
+    for doc in SCReader():
+        print(doc.to_dict())
         break
 
 

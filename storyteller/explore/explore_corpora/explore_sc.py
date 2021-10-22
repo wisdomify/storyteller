@@ -12,6 +12,8 @@ def main():
     # just space-join all the contents into sents
     sents = " ".join(train_json[0]['talk']['content'].values())
     print(sents)
+    print(train_json[0]['talk']['id'])
+
 
 
 if __name__ == '__main__':

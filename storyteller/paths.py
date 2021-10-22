@@ -13,6 +13,7 @@ CORPORA_DIR = path.join(DATA_DIR, "corpora")
 # corpora
 GK_DIR = path.join(CORPORA_DIR, "gk")
 SC_DIR = path.join(CORPORA_DIR, "sc")
+MR_DIR = path.join(CORPORA_DIR, "mr")
 DS_DIR = path.join(CORPORA_DIR, 'ds')
 
 
