@@ -49,8 +49,9 @@ def main():
     batch_size: int = args.b
     # --- delete a previously-populated index (for overriding with the new one)--- #
     client = connect_to_es()
-    r = client.indices.delete(index=index)
-    print(f"deleting {index} - {r}")
+    if client.indices.exists(index=index):
+        r = client.indices.delete(index=index)
+        print(f"deleting {index} - {r}")
     if index == "gk":
         GKDoc.init(using=client)  # create mappings
         reader = GKReader()  # instantiate the reader

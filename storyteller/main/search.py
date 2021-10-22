@@ -39,7 +39,7 @@ class Searcher:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--w", type=str,
-                        default="산 넘어 산")
+                        default="어")
     parser.add_argument("--i", type=str,
                         # just comma-enumerate the indices for multi-indices search
                         # https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multiple-indices.html
