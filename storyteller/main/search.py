@@ -17,8 +17,7 @@ class Searcher:
         query = {
             'match_phrase': {
                 'sents': {
-                    'query': wisdom,
-                    'analyzer': 'nori'
+                    'query': wisdom
                 }
              }
          }
@@ -39,7 +38,8 @@ class Searcher:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--w", type=str,
-                        default="어")
+                        # why can't I search for stopwords?
+                        default="산 넘어 산")
     parser.add_argument("--i", type=str,
                         # just comma-enumerate the indices for multi-indices search
                         # https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multiple-indices.html
@@ -54,6 +54,7 @@ def main():
     # --- instantiate a searcher --- #
     searcher = Searcher(connect_es())
     res = searcher(wisdom, indices, size)
+    print(res['hits']['total'])
     for hit in res['hits']['hits']:
         # also display which indices it came from
         print(f"indices: {hit['_index']}, highlight:{hit['highlight']['sents'][0]}")

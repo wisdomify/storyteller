@@ -1,9 +1,9 @@
 
-from storyteller.docs import GKDoc
+from storyteller.docs import GK
 
 
 def main():
-    print(GKDoc)
+    print(GK)
 
 
 if __name__ == '__main__':

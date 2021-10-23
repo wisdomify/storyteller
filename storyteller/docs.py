@@ -49,7 +49,7 @@ class Story(Document):
                     "nori_filter": {
                         "type": "nori_part_of_speech",
                         # 공백외에 전부 허용 - 이걸.. 어떻게 하지..
-                        "stoptags": ["SP"]
+                        "stoptags": []
                     }
                 }
             }
@@ -91,7 +91,6 @@ class SC(Story):
         for json_path in (train_json_path, val_json_path):
             with open(json_path, 'r') as fh:
                 corpus_json = json.loads(fh.read())
-                # yield the train set, and then the validation set
                 for sample in corpus_json:
                     yield SC(sents=" ".join(sample['talk']['content'].values()),
                              profile_id=sample['talk']['id']['profile-id'],
@@ -106,7 +105,6 @@ class MR(Story):
     """
     기계 독해 인덱스
     """
-
     # --- additional fields for MR --- #
     title = Keyword()
 

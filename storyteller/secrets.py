@@ -11,11 +11,12 @@ ES_PASSWORD = os.getenv('ES_PASSWORD')
 ES_CLOUD_ID = os.getenv('ES_CLOUD_ID')
 
 # --- credentials for gcloud --- #
-GCLOUD_BUCKET_NAME = os.getenv("GCLOUD_BUCKET_NAME")
+GCP_BUCKET_NAME = os.getenv("GCP_BUCKET_NAME")
 # TODO
-GCLOUD_API_KEY = ...
+GCP_API_KEY = ...
 
 # --- credentials for wandb --- #
-# TODO
-WANDB_API_KEY = ...
+WANDB_PROJECT_NAME = os.getenv("WANDB_PROJECT_NAME")
+WANDB_ENTITY_NAME = os.getenv("WANDB_ENTITY_NAME")
+
 
