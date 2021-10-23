@@ -120,6 +120,7 @@ class Splitter:
 
 
 def main():
+    # TODO: Not sure how the directory structure should work.
     ver_dir = os.path.join(DATA_DIR, 'version_1')
     # --- instantiate a splitter --- #
     splitter = Splitter(train_portion=80, validation_portion=10,

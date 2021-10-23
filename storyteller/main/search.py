@@ -3,7 +3,7 @@ searches for a wisdom from a given
 """
 import argparse
 from elasticsearch import Elasticsearch
-from storyteller.connectors import connect_to_es
+from storyteller.connectors import connect_es
 
 
 class Searcher:
@@ -45,13 +45,14 @@ def main():
                         # https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multiple-indices.html
                         default="gk,sc,mr")
     parser.add_argument("--s", type=int,
+                        # 10000 is the maximum
                         default=10000)
     args = parser.parse_args()
     wisdom: str = args.w
     indices: str = args.i
     size: int = args.s
     # --- instantiate a searcher --- #
-    searcher = Searcher(connect_to_es())
+    searcher = Searcher(connect_es())
     res = searcher(wisdom, indices, size)
     for hit in res['hits']['hits']:
         # also display which indices it came from

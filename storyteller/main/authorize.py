@@ -10,7 +10,6 @@ class Authorizer:
     """
     Supports storyteller/main/authorize.py
     """
-
     def __call__(self, *args, **kwargs):
         pass
 

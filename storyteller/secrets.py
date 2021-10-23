@@ -11,6 +11,7 @@ ES_PASSWORD = os.getenv('ES_PASSWORD')
 ES_CLOUD_ID = os.getenv('ES_CLOUD_ID')
 
 # --- credentials for gcloud --- #
+GCLOUD_BUCKET_NAME = os.getenv("GCLOUD_BUCKET_NAME")
 # TODO
 GCLOUD_API_KEY = ...
 

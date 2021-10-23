@@ -5,10 +5,11 @@ import argparse
 import itertools
 import os
 import zipfile
+from storyteller.connectors import connect_gcp
 from storyteller.paths import GK_DIR, SC_DIR
-from google.cloud import storage
 from typing import Iterator
 from tqdm import tqdm
+from google.cloud import storage
 from google.cloud.storage import Client, Bucket
 from google.cloud.storage import Blob
 
@@ -159,11 +160,10 @@ def main():
     args = parser.parse_args()
     corpus_name = args.c
     # --- instantiate a supporter --- #
-    client = storage.Client()
-    bucket = client.get_bucket('wisdomify')
+    client, bucket = connect_gcp()
     downloader = Downloader(client, bucket)
-
     # 일단 말뭉치만 다운로드를 진행함 - 꽤나 용량이 큰 데이터도 있으니, 주의할 것!
+    # 항상 unzip=true 를 하는 편이 나을 것 같다. 그냥 다은로드만 하면 바로 업로드할 수 있도록!
     if corpus_name == "gk":
         # general knowledge (일반 대화)
         downloader('story/elastic/일반상식', to=GK_DIR, unzip=True)
