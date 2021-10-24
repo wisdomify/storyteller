@@ -13,7 +13,7 @@ class Story(Document):
     sents = Text(analyzer="nori_analyzer")
 
     @staticmethod
-    def from_corpus() -> Generator['Story', None, None]:
+    def stream_from_corpus() -> Generator['Story', None, None]:
         """
         :return: a stream of Stories.
         """
@@ -61,7 +61,7 @@ class GK(Story):
     일반 상식 인덱스
     """
     @staticmethod
-    def from_corpus() -> Generator['GK', None, None]:
+    def stream_from_corpus() -> Generator['GK', None, None]:
         corpus_json_path = os.path.join(GK_DIR, "ko_wiki_v1_squad.json")
         with open(corpus_json_path, 'r') as fh:
             # refer to: storyteller/explore/explore_gk.py
@@ -84,7 +84,7 @@ class SC(Story):
     talk_id = Keyword()
 
     @staticmethod
-    def from_corpus() -> Generator['SC', None, None]:
+    def stream_from_corpus() -> Generator['SC', None, None]:
         train_json_path = os.path.join(SC_DIR, "Training", "감성대화말뭉치(최종데이터)_Training.json")
         val_json_path = os.path.join(SC_DIR, "Validation", "감성대화말뭉치(최종데이터)_Validation.json")
 
@@ -109,7 +109,7 @@ class MR(Story):
     title = Keyword()
 
     @staticmethod
-    def from_corpus() -> Generator['MR', None, None]:
+    def stream_from_corpus() -> Generator['MR', None, None]:
         normal_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_normal_squad_all.json")
         no_answer_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_noanswer_squad_all.json")
         clue_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_clue0529_squad_all.json")

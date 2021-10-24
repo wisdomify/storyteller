@@ -1,5 +1,5 @@
 
-from storyteller.docs import GK
+from storyteller.elastic.docs import GK
 
 
 def main():

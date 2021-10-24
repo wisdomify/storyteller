@@ -1,31 +1,35 @@
 """
-Anything that has to do with instantiating a some sort of client (accessing .env) goes into here.
+Anything that has to do with instantiating some sort of  a client via acessing .env,
+goes into here.
 """
 import wandb
+import os
 from wandb.sdk.wandb_run import Run
 from typing import Tuple
 from elasticsearch import Elasticsearch
 from storyteller.paths import DATA_DIR
-from storyteller.secrets import ES_CLOUD_ID, ES_USERNAME, ES_PASSWORD, GCP_BUCKET_NAME, WANDB_PROJECT_NAME, \
-    WANDB_ENTITY_NAME
 from google.cloud import storage
 from google.cloud.storage import Client, Bucket
 
 
-def connect_es() -> Elasticsearch:
-    es = Elasticsearch(ES_CLOUD_ID, http_auth=(ES_USERNAME, ES_PASSWORD))
+# --- elasticsearch --- #
+def connect_to_es() -> Elasticsearch:
+    es = Elasticsearch(os.getenv("ES_CLOUD_ID"), http_auth=(os.getenv("ES_USERNAME"),
+                                                            os.getenv("ES_PASSWORD")))
     return es
 
 
-def connect_gcp() -> Tuple[Client, Bucket]:
+# --- google cloud platform --- #
+def connect_to_gcp() -> Tuple[Client, Bucket]:
     client = storage.Client()
-    bucket = client.get_bucket(GCP_BUCKET_NAME)
+    bucket = client.get_bucket(os.getenv("GCP_BUCKET_NAME"))
     return client, bucket
 
 
-def connect_wandb(**kwargs) -> Run:
+# --- weights & biases --- #
+def connect_to_wandb(**kwargs) -> Run:
     run = wandb.init(dir=DATA_DIR,
-                     project=WANDB_PROJECT_NAME,
-                     entity=WANDB_ENTITY_NAME,
+                     project=os.getenv("WANDB_PROJECT_NAME"),
+                     entity=os.getenv("WANDB_ENTITY_NAME"),
                      **kwargs)
     return run

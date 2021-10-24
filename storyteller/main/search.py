@@ -1,40 +1,11 @@
 """
-searches for a wisdom from a given
+searches for
 """
 import argparse
-from elasticsearch import Elasticsearch
-from storyteller.connectors import connect_es
+from storyteller.connectors import connect_to_es
+from storyteller.elastic.searcher import Searcher
 
 
-class Searcher:
-    """
-    supports storyteller/main/search.py
-    """
-    def __init__(self, client: Elasticsearch):
-        self.client = client
-
-    def __call__(self, wisdom: str, indices: str,  size: int) -> dict:
-        query = {
-            'match_phrase': {
-                'sents': {
-                    'query': wisdom
-                }
-             }
-         }
-        highlight = {
-            'fields': {
-                'sents': {
-                    'type': 'plain',
-                    'fragment_size': 100,
-                    'number_of_fragments': 2,
-                    'fragmenter': 'span'
-                }
-            }
-         }
-        return self.client.search(index=indices, query=query, highlight=highlight, size=size, )
-
-
-# --- the script --- #
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--w", type=str,
@@ -52,7 +23,7 @@ def main():
     indices: str = args.i
     size: int = args.s
     # --- instantiate a searcher --- #
-    searcher = Searcher(connect_es())
+    searcher = Searcher(connect_to_es())
     res = searcher(wisdom, indices, size)
     print(res['hits']['total'])
     for hit in res['hits']['hits']:
