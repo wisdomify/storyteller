@@ -22,7 +22,7 @@ def main():
     client = connect_to_es()
     if client.indices.exists(index=index):
         r = client.indices.delete(index=index)
-        print(f"deleting {index} - {r}")
+        print(f"Deleted {index} - {r}")
     # --- create the mappings for indices, and setup a stream of Stories --- #
     if index == "gk":
         GK.init(using=client)

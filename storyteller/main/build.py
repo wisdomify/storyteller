@@ -9,28 +9,29 @@ from storyteller.connectors import connect_to_es
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dty", type=str,
+    parser.add_argument("--artifact_name", type=str,
                         default="wisdoms")
-    parser.add_argument("seed", type=int,
+    parser.add_argument("--seed", type=int,
                         default=38)
+    parser.add_argument("--train_ratio", type=float,
+                        default=0.9)
+    # --- parse the arguments --- #
     args = parser.parse_args()
-    dty: str = args.dty
+    artifact_name: str = args.artifact_name
     seed: int = args.seed
-    if dty == "wisdomify_test":
+    train_ratio: float = args.train_ratio
+    # --- instantiate a builder to use --- #
+    if artifact_name == "wisdomify_test":
         builder = WisdomifyTestBuilder()
-    elif dty == "wisdoms":
+    elif artifact_name == "wisdoms":
         builder = WisdomsBuilder()
-    elif dty == "wisdom2def":
-        builder = Wisdom2DefBuilder()
-    elif dty == "wisdom2eg":
-        # 1. first, builds (searches) wisdom2eg_raw.tsv from ES
-        # 2. process wisdom2eg_raw.tsv to build wisdom2eg.tsv
-        # 3. split wisdom2eg.tsv into wisdom2eg_train.tsv * wisdom2eg_val.tsv
+    elif artifact_name == "wisdom2def":
+        builder = Wisdom2DefBuilder(train_ratio, seed)
+    elif artifact_name == "wisdom2eg":
         client = connect_to_es()
-        builder = Wisdom2EgBuilder(client)
+        builder = Wisdom2EgBuilder(client, train_ratio, seed)
     else:
-        raise ValueError(f"Invalid dty: {dty}")
-
+        raise ValueError(f"Invalid artifact_name: {artifact_name}")
     # execute the building process
     builder()
 

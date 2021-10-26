@@ -3,9 +3,6 @@ paths to parsers, data is declared at here.
 """
 from pathlib import Path
 from os import path
-from dotenv import load_dotenv, find_dotenv
-# init the environment
-load_dotenv(dotenv_path=find_dotenv())
 
 # The directories
 ROOT_DIR = Path(__file__).resolve().parent.parent.__str__()

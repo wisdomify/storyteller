@@ -3,11 +3,10 @@ These builders are for building the tsv files, the dataset - the end product of 
 This is where we split, augment, filter, pre-process data.
 """
 import os
-from typing import Optional
-
-import pandas as pd
 import requests
+from typing import Callable
 from elasticsearch import Elasticsearch
+from storyteller.loaders import load_wisdom2def, load_wisdom2eg
 from storyteller.paths import (
     WISDOMIFY_TEST_TSV,
     WISDOM2DEF_RAW_TSV,
@@ -25,6 +24,11 @@ from sklearn.model_selection import train_test_split
 class Builder:
 
     def __call__(self, *args, **kwargs):
+        # just build everything.
+        # build wisdoms.txt
+        # build wisdomify_test.tsv
+        # build wisdom2def package.
+        # build wisdom2eg package.
         raise NotImplementedError
 
     @staticmethod
@@ -56,18 +60,19 @@ class WisdomsBuilder(Builder):
 
 class Wisdom2SentBuilder(Builder):
 
-    def __init__(self, seed: int, train_portion: float):
+    def __init__(self, train_ratio: float, seed: int,
+                 loader: Callable, train_path: str, val_path: str):
+        self.train_ratio = train_ratio
         self.seed = seed
-        self.train_portion = train_portion
-        self.wisdom2sent_path: Optional[str] = None
-        self.wisdom2sent_train_path: Optional[str] = None
-        self.wisdom2sent_val_path: Optional[str] = None
+        self.loader = loader
+        self.train_path = train_path
+        self.val_path = val_path
 
     def __call__(self, *args, **kwargs):
+        # --- these three steps are all you need to implement.
         self.build_wisdom2sent_raw()  # build wisdom2sent_raw.tsv
         self.build_wisdom2sent()  # build wisdom2sent.tsv
-        self.init_paths()
-        self.build_train_val()
+        self.build_train_val()  # build wisdom2sent_train.tsv &  wisdom2sent_val.tsv
 
     def build_wisdom2sent_raw(self):
         raise NotImplementedError
@@ -75,19 +80,16 @@ class Wisdom2SentBuilder(Builder):
     def build_wisdom2sent(self):
         raise NotImplementedError
 
-    def init_paths(self):
-        raise NotImplementedError
-
     def build_train_val(self):
-        all_df = pd.read_csv(self.wisdom2sent_path, sep="\t")
-        total = all_df.count
-        tran_size = int(total * self.train_portion)
+        all_df = self.loader()
+        total = len(all_df)
+        tran_size = int(total * self.train_ratio)
         val_size = total - tran_size
         train_df, val_df = train_test_split(all_df, train_size=tran_size,
                                             test_size=val_size, random_state=self.seed,
                                             shuffle=True)
-        train_df.to_csv(self.wisdom2sent_train_path, sep="\t", index=False)
-        val_df.to_csv(self.wisdom2sent_val_path, sep="\t", index=False)
+        train_df.to_csv(self.train_path, sep="\t", index=False)
+        val_df.to_csv(self.val_path, sep="\t", index=False)
 
 
 class Wisdom2DefBuilder(Wisdom2SentBuilder):
@@ -96,15 +98,16 @@ class Wisdom2DefBuilder(Wisdom2SentBuilder):
     2. process wisdom2def_raw.tsv to build wisdom2def.tsv (involves augmentation)
     3. split wisdom2def.tsv into wisdom2def_train.tsv * wisdom2def_val.tsv
     """
-
-    def init_paths(self):
-        self.wisdom2sent_path = WISDOM2DEF_TSV
-        self.wisdom2sent_train_path = WISDOM2DEF_TRAIN_TSV
-        self.wisdom2sent_val_path = WISDOM2DEF_VAL_TSV
+    def __init__(self, train_ratio: float, seed: int):
+        super().__init__(train_ratio, seed,
+                         # pass a function as a parameter.
+                         loader=load_wisdom2def,
+                         train_path=WISDOM2DEF_TRAIN_TSV,
+                         val_path=WISDOM2DEF_VAL_TSV)
 
     def build_wisdom2sent_raw(self):
         """
-        this involve downloading it from Google Sheets
+        Just download wisdom2sent_raw.tsv from Google Sheets
         :return:
         """
         self.build_from_url(url=os.getenv("WISDOM2DEF_RAW_URL"),
@@ -112,22 +115,27 @@ class Wisdom2DefBuilder(Wisdom2SentBuilder):
 
     def build_wisdom2sent(self):
         """
-        This may involve some augmentation
+        Augment wisdom2sent_raw.tsv to build wisdom2sent.tsv
         :return:
         """
         pass
 
 
 class Wisdom2EgBuilder(Wisdom2SentBuilder):
+    """
+    # 1. first, builds (searches) wisdom2eg_raw.tsv from ES
+    # 2. process wisdom2eg_raw.tsv to build wisdom2eg.tsv
+    # 3. split wisdom2eg.tsv into wisdom2eg_train.tsv * wisdom2eg_val.tsv
+    """
 
-    def __init__(self, client: Elasticsearch, seed: int, train_portion: float):
-        super().__init__(seed, train_portion)
+    def __init__(self, client: Elasticsearch, train_ratio: float,  seed: int):
+        super().__init__(train_ratio, seed,
+                         loader=load_wisdom2eg,
+                         train_path=WISDOM2EG_TRAIN_TSV,
+                         val_path=WISDOM2EG_VAL_TSV)
         self.client = client
-
-    def init_paths(self):
-        self.wisdom2sent_path = WISDOM2EG_TSV
-        self.wisdom2sent_train_path = WISDOM2EG_TRAIN_TSV
-        self.wisdom2sent_val_path = WISDOM2EG_VAL_TSV
+        self.train_ratio = train_ratio
+        self.seed = seed
 
     def build_wisdom2sent_raw(self):
         """
