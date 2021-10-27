@@ -3,10 +3,6 @@ paths to parsers, data is declared at here.
 """
 from pathlib import Path
 from os import path
-from dotenv import load_dotenv, find_dotenv
-
-# this loads all the environment variable from .env to os.environ.
-load_dotenv(dotenv_path=find_dotenv())
 
 
 # The directories
