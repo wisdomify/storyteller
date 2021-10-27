@@ -9,14 +9,14 @@ from storyteller.elastic.indexer import Indexer
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--i", type=str,
-                        default="gk")
-    parser.add_argument("--b", type=int,
+    parser.add_argument("--index", type=str,
+                        default="gk_story")
+    parser.add_argument("--batch_size", type=int,
                         default=1000)
     # --- parse the arguments --- #
     args = parser.parse_args()
-    index: str = args.i
-    batch_size: int = args.b
+    index: str = args.index
+    batch_size: int = args.batch_size
     # --- delete a previously-populated index should they exist,
     # such that we get to override it with the new mappings --- #
     client = connect_to_es()
@@ -24,13 +24,13 @@ def main():
         r = client.indices.delete(index=index)
         print(f"Deleted {index} - {r}")
     # --- create the mappings for indices, and setup a stream of Stories --- #
-    if index == "gk":
+    if index == GK.Index.name:
         GK.init(using=client)
         stories = GK.stream_from_corpus()
-    elif index == "sc":
+    elif index == SC.Index.name:
         SC.init(using=client)
         stories = SC.stream_from_corpus()
-    elif index == "mr":
+    elif index == MR.Index.name:
         MR.init(using=client)
         stories = MR.stream_from_corpus()
     else:

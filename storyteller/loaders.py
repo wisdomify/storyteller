@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import List
-from storyteller.paths import WISDOMS_TXT, WISDOM2DEF_TSV, WISDOM2EG_TSV
+from storyteller.paths import WISDOMS_TXT, WISDOM2DEF_TSV, WISDOM2EG_TSV, WISDOM2DEF_RAW_TSV, WISDOM2EG_RAW_TSV
 from dotenv import load_dotenv, find_dotenv
 # init the environment
 
@@ -17,6 +17,14 @@ def load_wisdoms() -> List[str]:
         return [
             wisdom for wisdom in fh
         ]
+
+
+def load_wisdom2def_raw() -> pd.DataFrame:
+    return pd.read_csv(WISDOM2DEF_RAW_TSV, sep="\t")
+
+
+def load_wisdom2eg_raw() -> pd.DataFrame:
+    return pd.read_csv(WISDOM2EG_RAW_TSV, sep="\t")
 
 
 def load_wisdom2def() -> pd.DataFrame:

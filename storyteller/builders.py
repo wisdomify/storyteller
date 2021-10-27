@@ -3,10 +3,15 @@ These builders are for building the tsv files, the dataset - the end product of 
 This is where we split, augment, filter, pre-process data.
 """
 import os
+import smtpd
+
+import pandas as pd
 import requests
-from typing import Callable
+from typing import Callable, Tuple
 from elasticsearch import Elasticsearch
-from storyteller.loaders import load_wisdom2def, load_wisdom2eg
+
+from storyteller.elastic.searcher import Searcher
+from storyteller.loaders import load_wisdom2def, load_wisdom2eg, load_wisdom2def_raw, load_wisdom2eg_raw, load_wisdoms
 from storyteller.paths import (
     WISDOMIFY_TEST_TSV,
     WISDOM2DEF_RAW_TSV,
@@ -60,13 +65,9 @@ class WisdomsBuilder(Builder):
 
 class Wisdom2SentBuilder(Builder):
 
-    def __init__(self, train_ratio: float, seed: int,
-                 loader: Callable, train_path: str, val_path: str):
+    def __init__(self, train_ratio: float, seed: int):
         self.train_ratio = train_ratio
         self.seed = seed
-        self.loader = loader
-        self.train_path = train_path
-        self.val_path = val_path
 
     def __call__(self, *args, **kwargs):
         # --- these three steps are all you need to implement.
@@ -74,22 +75,36 @@ class Wisdom2SentBuilder(Builder):
         self.build_wisdom2sent()  # build wisdom2sent.tsv
         self.build_train_val()  # build wisdom2sent_train.tsv &  wisdom2sent_val.tsv
 
+    # --- to be implemented --- #
     def build_wisdom2sent_raw(self):
         raise NotImplementedError
 
     def build_wisdom2sent(self):
         raise NotImplementedError
 
+    @staticmethod
+    def load_wisdom2sent() -> pd.DataFrame:
+        raise NotImplementedError
+
+    @staticmethod
+    def train_val_paths() -> Tuple[str, str]:
+        raise NotImplementedError
+
     def build_train_val(self):
-        all_df = self.loader()
+        """
+        Split into train & validation set, and save them.
+        :return:
+        """
+        all_df = self.load_wisdom2sent()
         total = len(all_df)
         tran_size = int(total * self.train_ratio)
         val_size = total - tran_size
         train_df, val_df = train_test_split(all_df, train_size=tran_size,
                                             test_size=val_size, random_state=self.seed,
                                             shuffle=True)
-        train_df.to_csv(self.train_path, sep="\t", index=False)
-        val_df.to_csv(self.val_path, sep="\t", index=False)
+        train_path, val_path = self.train_val_paths()
+        train_df.to_csv(train_path, sep="\t", index=False)
+        val_df.to_csv(val_path, sep="\t", index=False)
 
 
 class Wisdom2DefBuilder(Wisdom2SentBuilder):
@@ -98,12 +113,6 @@ class Wisdom2DefBuilder(Wisdom2SentBuilder):
     2. process wisdom2def_raw.tsv to build wisdom2def.tsv (involves augmentation)
     3. split wisdom2def.tsv into wisdom2def_train.tsv * wisdom2def_val.tsv
     """
-    def __init__(self, train_ratio: float, seed: int):
-        super().__init__(train_ratio, seed,
-                         # pass a function as a parameter.
-                         loader=load_wisdom2def,
-                         train_path=WISDOM2DEF_TRAIN_TSV,
-                         val_path=WISDOM2DEF_VAL_TSV)
 
     def build_wisdom2sent_raw(self):
         """
@@ -118,7 +127,17 @@ class Wisdom2DefBuilder(Wisdom2SentBuilder):
         Augment wisdom2sent_raw.tsv to build wisdom2sent.tsv
         :return:
         """
-        pass
+        wisdom2def_raw_df = load_wisdom2def_raw()
+        # just write it as-is as of right now.
+        wisdom2def_raw_df.to_csv(WISDOM2DEF_TSV, sep="\t")
+
+    @staticmethod
+    def load_wisdom2sent() -> pd.DataFrame:
+        return load_wisdom2def()
+
+    @staticmethod
+    def train_val_paths() -> Tuple[str, str]:
+        return WISDOM2DEF_TRAIN_TSV, WISDOM2DEF_VAL_TSV
 
 
 class Wisdom2EgBuilder(Wisdom2SentBuilder):
@@ -128,12 +147,9 @@ class Wisdom2EgBuilder(Wisdom2SentBuilder):
     # 3. split wisdom2eg.tsv into wisdom2eg_train.tsv * wisdom2eg_val.tsv
     """
 
-    def __init__(self, client: Elasticsearch, train_ratio: float,  seed: int):
-        super().__init__(train_ratio, seed,
-                         loader=load_wisdom2eg,
-                         train_path=WISDOM2EG_TRAIN_TSV,
-                         val_path=WISDOM2EG_VAL_TSV)
-        self.client = client
+    def __init__(self, searcher: Searcher, train_ratio: float, seed: int):
+        super().__init__(train_ratio, seed)
+        self.searcher = searcher
         self.train_ratio = train_ratio
         self.seed = seed
 
@@ -142,6 +158,7 @@ class Wisdom2EgBuilder(Wisdom2SentBuilder):
         This involves searching the wisdoms on ES indices.
         :return:
         """
+        # TODO - implement this later
         pass
 
     def build_wisdom2sent(self):
@@ -149,4 +166,13 @@ class Wisdom2EgBuilder(Wisdom2SentBuilder):
         This may involve some parsing. (e.g. <idiom>산 넘어 산</idiom>이라고 -> [WISDOM]이라고
         :return:
         """
+        # TODO - implement this later
         pass
+
+    @staticmethod
+    def load_wisdom2sent() -> pd.DataFrame:
+        return load_wisdom2eg()
+
+    @staticmethod
+    def train_val_paths() -> Tuple[str, str]:
+        return WISDOM2EG_TRAIN_TSV, WISDOM2EG_VAL_TSV

@@ -71,7 +71,7 @@ class GK(Story):
                 yield GK(sents=paragraph['context'])
 
     class Index:
-        name = "gk"
+        name = "gk_story"
         settings = Story.settings()
 
 
@@ -97,7 +97,7 @@ class SC(Story):
                              talk_id=sample['talk']['id']['talk-id'])
 
     class Index:
-        name = "sc"
+        name = "sc_story"
         settings = Story.settings()
 
 
@@ -122,6 +122,6 @@ class MR(Story):
                              title=sample['title'])
 
     class Index:
-        name = "mr"
+        name = "mr_story"
         settings = Story.settings()
 
