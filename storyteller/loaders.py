@@ -4,9 +4,6 @@ from storyteller.paths import WISDOMS_TXT, WISDOM2DEF_TSV, WISDOM2EG_TSV, WISDOM
 from dotenv import load_dotenv, find_dotenv
 # init the environment
 
-# this loads all the environment variable from .env to os.environ.
-load_dotenv(dotenv_path=find_dotenv())
-
 
 def load_wisdoms() -> List[str]:
     """
