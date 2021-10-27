@@ -1,4 +1,4 @@
-from storyteller.utils.wandb_controller import WandBSupport
+from storyteller.supporters.wandb_controller import WandBSupport
 
 
 def upload_gold_test_queries():

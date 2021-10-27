@@ -1,6 +1,6 @@
 import pandas as pd
 
-from storyteller.utils.wandb_controller import WandBSupport
+from storyteller.supporters.wandb_controller import WandBSupport
 
 
 def update_dataset_from_wandb():
@@ -28,7 +28,7 @@ def update_dataset_from_wandb():
         )
 
         # download
-        dl_spec = wandb_support.download_artifact(name=dataset, dtype='dataset')
+        dl_spec = wandb_support.download_artifact(name=dataset, dty='dataset')
 
         train_df = pd.read_csv(f"{dl_spec['download_dir']}/training.tsv", sep='\t')
         validate_df = pd.read_csv(f"{dl_spec['download_dir']}/validation.tsv", sep='\t')
