@@ -3,8 +3,6 @@ This is for pushing all the tsv files to wandb
 """
 
 import argparse
-import wandb
-from wandb.sdk.wandb_run import Run
 from storyteller.connectors import connect_to_wandb
 from storyteller.paths import WISDOMIFY_TEST_TSV, WISDOM2DEF_DIR, WISDOM2EG_DIR, WISDOMS_TXT
 from storyteller.uploaders import upload_dir, upload_file

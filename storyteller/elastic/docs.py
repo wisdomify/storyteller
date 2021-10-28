@@ -3,9 +3,9 @@ for defining Elasticsearch docs and the indices.
 """
 import os
 import json
-from collections import Generator
+from typing import Generator
 from elasticsearch_dsl import Document, Text, Keyword
-from storyteller.paths import GK_DIR, SC_DIR, MR_DIR
+from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR
 
 
 class Story(Document):
@@ -60,6 +60,7 @@ class GK(Story):
     """
     일반 상식 인덱스
     """
+
     @staticmethod
     def stream_from_corpus() -> Generator['GK', None, None]:
         corpus_json_path = os.path.join(GK_DIR, "ko_wiki_v1_squad.json")
@@ -125,3 +126,24 @@ class MR(Story):
         name = "mr_story"
         settings = Story.settings()
 
+
+class BS(Story):
+    """
+    도서자료 요약
+    """
+    passage_id = Keyword()
+    # --- additional fields for MR --- #
+
+    @staticmethod
+    def stream_from_corpus() -> Generator['BS', None, None]:
+        json_path = os.path.join(BS_DIR, "bs.json")
+
+        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
+            corpus_json = json.loads(fh.read())
+            for sample in corpus_json:
+                yield BS(sents=sample['passage'],
+                         passage_id=sample['passage_id'])
+
+    class Index:
+        name = "bs_story"
+        settings = Story.settings()

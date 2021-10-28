@@ -3,16 +3,16 @@ index a pre-downloaded corpus into elasticsearch.
 """
 import argparse
 from storyteller.connectors import connect_to_es
-from storyteller.elastic.docs import GK, SC, MR, Story
+from storyteller.elastic.docs import GK, SC, MR, BS
 from storyteller.elastic.indexer import Indexer
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--index", type=str,
-                        default="gk_story")
+                        default="bs_story")
     parser.add_argument("--batch_size", type=int,
-                        default=1000)
+                        default=100)
     # --- parse the arguments --- #
     args = parser.parse_args()
     index: str = args.index
@@ -33,6 +33,9 @@ def main():
     elif index == MR.Index.name:
         MR.init(using=client)
         stories = MR.stream_from_corpus()
+    elif index == BS.Index.name:
+        BS.init(using=client)
+        stories = BS.stream_from_corpus()
     else:
         raise ValueError(f"Invalid index: {index}")
     # --- init an indexer with the Stories --- #
