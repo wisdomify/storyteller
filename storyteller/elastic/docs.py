@@ -5,7 +5,7 @@ import os
 import json
 from collections import Generator
 from elasticsearch_dsl import Document, Text, Keyword
-from storyteller.paths import GK_DIR, SC_DIR, MR_DIR
+from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, NEWS_DIR
 
 
 class Story(Document):
@@ -125,3 +125,20 @@ class MR(Story):
         name = "mr_story"
         settings = Story.settings()
 
+
+class News(Story):
+    """
+
+    """
+    # ---- 추가필드 (어떤 언론사, 날짜) --- #
+    # TODO:
+
+    @staticmethod
+    def stream_from_corpus() -> Generator['News', None, None]:
+        # use NEWS_DIR.
+        # TODO:
+        pass
+
+    class Index:
+        name = "news_story"
+        settings = Story.settings()
