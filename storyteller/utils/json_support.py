@@ -1,6 +1,8 @@
 import json
 import os
 
+from storyteller.paths import CVC_DIR
+
 
 def get_files(on: str):
     jsons = list()
@@ -25,3 +27,8 @@ def merge_json_files(on: str, to: str):
 
     with open(to, 'w', encoding='UTF-8-sig') as output_file:
         json.dump(result, output_file, ensure_ascii=False)
+
+
+if __name__ == '__main__':
+    merge_json_files(on=os.path.join(CVC_DIR, 'story/elastic/cvc/Validation/unzipped'),
+                     to=os.path.join(CVC_DIR, 'val_3.json'))

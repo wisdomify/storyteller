@@ -15,6 +15,7 @@ GK_DIR = path.join(CORPORA_DIR, "gk")  # 일반상식
 SC_DIR = path.join(CORPORA_DIR, "sc")  # 감성대화
 MR_DIR = path.join(CORPORA_DIR, "mr")  # 기계독해
 BS_DIR = path.join(CORPORA_DIR, "bs")  # 도서자료 요약
+CVC_DIR = path.join(CORPORA_DIR, "cvc")  # 명령어 음성(소아, 유아)
 
 
 # wandb - related
