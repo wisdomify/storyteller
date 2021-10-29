@@ -1,7 +1,7 @@
 import json
 import os
 
-from storyteller.paths import CVC_DIR
+from storyteller.paths import CVC_DIR, DS_DIR
 
 
 def get_files(on: str):
@@ -30,5 +30,5 @@ def merge_json_files(on: str, to: str):
 
 
 if __name__ == '__main__':
-    merge_json_files(on=os.path.join(CVC_DIR, 'story/elastic/cvc/Validation/unzipped'),
-                     to=os.path.join(CVC_DIR, 'val_3.json'))
+    merge_json_files(on=os.path.join(DS_DIR, 'story/elastic/문서요약 텍스트'),
+                     to=os.path.join(DS_DIR, 'ds.json'))

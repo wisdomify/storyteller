@@ -5,7 +5,7 @@ import os
 import json
 from typing import Generator
 from elasticsearch_dsl import Document, Text, Keyword
-from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR
+from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR
 
 
 class Story(Document):
@@ -132,6 +132,7 @@ class BS(Story):
     도서자료 요약
     """
     passage_id = Keyword()
+
     # --- additional fields for MR --- #
 
     @staticmethod
@@ -146,4 +147,31 @@ class BS(Story):
 
     class Index:
         name = "bs_story"
+        settings = Story.settings()
+
+
+class DS(Story):
+    """
+    문서요약 텍스트
+    """
+    doc_id = Keyword()
+    text_index = Keyword()
+
+    # --- additional fields for MR --- #
+
+    @staticmethod
+    def stream_from_corpus() -> Generator['DS', None, None]:
+        json_path = os.path.join(DS_DIR, "ds.json")
+
+        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
+            corpus_jsons = json.loads(fh.read())
+            for corpus_json in corpus_jsons:
+                for doc in corpus_json['documents']:
+                    for text in doc['text'][0]:
+                        yield BS(sents=text['sentence'],
+                                 doc_id=doc['id'],
+                                 text_index=text['index'])
+
+    class Index:
+        name = "ds_story"
         settings = Story.settings()
