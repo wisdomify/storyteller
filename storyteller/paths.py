@@ -16,8 +16,8 @@ SC_DIR = path.join(CORPORA_DIR, "sc")  # 감성대화
 MR_DIR = path.join(CORPORA_DIR, "mr")  # 기계독해
 BS_DIR = path.join(CORPORA_DIR, "bs")  # 도서자료 요약
 CVC_DIR = path.join(CORPORA_DIR, "cvc")  # 명령어 음성(소아, 유아)
-DS_DIR = path.join(CORPORA_DIR, "ds")
-
+DS_DIR = path.join(CORPORA_DIR, "ds")   # 문서요약 텍스트
+SFC_DIR = path.join(CORPORA_DIR, "sfc")     # 전문분야 말뭉치
 
 # wandb - related
 WANDB_DIR = path.join(DATA_DIR, "wandb")

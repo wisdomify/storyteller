@@ -5,7 +5,7 @@ import os
 import json
 from typing import Generator
 from elasticsearch_dsl import Document, Text, Keyword
-from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR
+from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR
 
 
 class Story(Document):
@@ -175,3 +175,36 @@ class DS(Story):
     class Index:
         name = "ds_story"
         settings = Story.settings()
+
+
+class SFC(Story):
+    """
+    전문분야 말뭉치
+    """
+    doc_id = Keyword()
+    sent_no = Keyword()
+    title = Keyword()
+
+    # --- additional fields for MR --- #
+
+    @staticmethod
+    def stream_from_corpus() -> Generator['SFC', None, None]:
+        json_path = os.path.join(SFC_DIR, "sfc.json")
+
+        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
+            corpus_jsons = json.loads(fh.read())
+            for corpus_json in corpus_jsons:
+                for doc in corpus_json['data']:
+                    if 'sentence' not in doc.keys():
+
+                        continue
+                    for idx, sentence in enumerate(doc['sentence']):
+                        yield SFC(sents=sentence['text'],
+                                  doc_id=doc['doc_id'],
+                                  sent_no=idx+1,
+                                  title=doc['title'])
+
+    class Index:
+        name = "sfc_story"
+        settings = Story.settings()
+
