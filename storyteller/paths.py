@@ -20,6 +20,7 @@ DS_DIR = path.join(CORPORA_DIR, "ds")   # 문서요약 텍스트
 SFC_DIR = path.join(CORPORA_DIR, "sfc")     # 전문분야 말뭉치
 KESS_DIR = path.join(CORPORA_DIR, "kess")     # 한국어-영어 번역 말뭉치 (사회과학)
 KJ_DIR = path.join(CORPORA_DIR, "kj")     # 한국어-일본어 번역 말뭉치
+KCSS_DIR = path.join(CORPORA_DIR, "kcss")     # 한국어-중국어 번역 말뭉치 사회과학
 
 # wandb - related
 WANDB_DIR = path.join(DATA_DIR, "wandb")

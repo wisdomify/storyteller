@@ -3,14 +3,14 @@ index a pre-downloaded corpus into elasticsearch.
 """
 import argparse
 from storyteller.connectors import connect_to_es
-from storyteller.elastic.docs import GK, SC, MR, BS, DS, SFC, KESS, KJ
+from storyteller.elastic.docs import GK, SC, MR, BS, DS, SFC, KESS, KJ, KCSS
 from storyteller.elastic.indexer import Indexer
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--index", type=str,
-                        default="kj_story")
+                        default="kcss_story")
     parser.add_argument("--batch_size", type=int,
                         default=1000)
     # --- parse the arguments --- #
@@ -48,6 +48,9 @@ def main():
     elif index == KJ.Index.name:
         KJ.init(using=client)
         stories = KJ.stream_from_corpus()
+    elif index == KCSS.Index.name:
+        KCSS.init(using=client)
+        stories = KCSS.stream_from_corpus()
 
     else:
         raise ValueError(f"Invalid index: {index}")
