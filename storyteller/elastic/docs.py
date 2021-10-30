@@ -5,7 +5,7 @@ import os
 import json
 from typing import Generator
 from elasticsearch_dsl import Document, Text, Keyword
-from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR
+from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR
 
 
 class Story(Document):
@@ -228,5 +228,27 @@ class KESS(Story):
 
     class Index:
         name = "kess_story"
+        settings = Story.settings()
+
+
+class KJ(Story):
+    """
+    한국어 일본어 번역 말뭉치
+    """
+    manage_no = Keyword()
+
+    @staticmethod
+    def stream_from_corpus() -> Generator['KJ', None, None]:
+        json_path = os.path.join(KJ_DIR, "kj.json")
+
+        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
+            corpus_jsons = json.loads(fh.read())
+            for corpus_json in corpus_jsons:
+                for doc in corpus_json:
+                    yield SFC(sents=doc['한국어'],
+                              manage_no=doc['관리번호'])
+
+    class Index:
+        name = "kj_story"
         settings = Story.settings()
 
