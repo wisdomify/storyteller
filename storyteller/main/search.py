@@ -4,6 +4,7 @@ searches for
 import argparse
 from storyteller.connectors import connect_to_es
 from storyteller.elastic.searcher import Searcher
+from storyteller.elastic.docs import Story
 
 
 def main():
@@ -14,7 +15,7 @@ def main():
     parser.add_argument("--i", type=str,
                         # just comma-enumerate the indices for multi-indices search
                         # https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multiple-indices.html
-                        default="gk,sc,mr")
+                        default=",".join([cls.Index.name for cls in Story.__subclasses__()]))
     parser.add_argument("--s", type=int,
                         # 10000 is the maximum
                         default=10000)
