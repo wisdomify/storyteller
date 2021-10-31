@@ -11,7 +11,7 @@ from google.cloud.storage import Blob
 
 from copy import copy
 
-from storyteller.paths import BS_DIR, CVC_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR
+from storyteller.paths import BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR
 
 
 class GCPStorage:

@@ -12,7 +12,7 @@ def main():
     parser.add_argument("--index", type=str,
                         default="kcss_story")
     parser.add_argument("--batch_size", type=int,
-                        default=1000)
+                        default=500)
     # --- parse the arguments --- #
     args = parser.parse_args()
     index: str = args.index

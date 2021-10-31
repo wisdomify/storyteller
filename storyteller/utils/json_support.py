@@ -1,7 +1,7 @@
 import json
 import os
 
-from storyteller.paths import CVC_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR
+from storyteller.paths import DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, BS_DIR
 
 
 def get_files(on: str):
@@ -16,6 +16,7 @@ def get_files(on: str):
 def merge_json_files(on: str, to: str):
     result = list()
     files = get_files(on)
+    print(len(files))
     for i, f1 in enumerate(files):
         print(i, end=' ')
         with open(f1, 'r', encoding='utf-8') as infile:

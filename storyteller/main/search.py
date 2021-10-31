@@ -14,7 +14,7 @@ def main():
     parser.add_argument("--i", type=str,
                         # just comma-enumerate the indices for multi-indices search
                         # https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multiple-indices.html
-                        default="gk_story,sc_story,mr_story,ds_story,bs_story")
+                        default="sfc_story")
     parser.add_argument("--s", type=int,
                         # 10000 is the maximum
                         default=10000)
