@@ -3,16 +3,16 @@ index a pre-downloaded corpus into elasticsearch.
 """
 import argparse
 from storyteller.connectors import connect_to_es
-from storyteller.elastic.docs import GK, SC, MR, BS, DS, SFC, KESS, KJ, KCSS
+from storyteller.elastic.docs import GK, SC, MR, BS, DS, SFC, KESS, KJ, KCSS, SFKE, KSNS
 from storyteller.elastic.indexer import Indexer
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--index", type=str,
-                        default="kcss_story")
+                        default="ksns_story")
     parser.add_argument("--batch_size", type=int,
-                        default=500)
+                        default=1000)
     # --- parse the arguments --- #
     args = parser.parse_args()
     index: str = args.index
@@ -24,36 +24,25 @@ def main():
         r = client.indices.delete(index=index)
         print(f"Deleted {index} - {r}")
     # --- create the mappings for indices, and setup a stream of Stories --- #
-    if index == GK.Index.name:
-        GK.init(using=client)
-        stories = GK.stream_from_corpus()
-    elif index == SC.Index.name:
-        SC.init(using=client)
-        stories = SC.stream_from_corpus()
-    elif index == MR.Index.name:
-        MR.init(using=client)
-        stories = MR.stream_from_corpus()
-    elif index == BS.Index.name:
-        BS.init(using=client)
-        stories = BS.stream_from_corpus()
-    elif index == DS.Index.name:
-        DS.init(using=client)
-        stories = DS.stream_from_corpus()
-    elif index == SFC.Index.name:
-        SFC.init(using=client)
-        stories = SFC.stream_from_corpus()
-    elif index == KESS.Index.name:
-        KESS.init(using=client)
-        stories = KESS.stream_from_corpus()
-    elif index == KJ.Index.name:
-        KJ.init(using=client)
-        stories = KJ.stream_from_corpus()
-    elif index == KCSS.Index.name:
-        KCSS.init(using=client)
-        stories = KCSS.stream_from_corpus()
-
-    else:
+    docs = {
+        GK.Index.name: GK,
+        SC.Index.name: SC,
+        MR.Index.name: MR,
+        BS.Index.name: BS,
+        DS.Index.name: DS,
+        SFC.Index.name: SFC,
+        KESS.Index.name: KESS,
+        KJ.Index.name: KJ,
+        KCSS.Index.name: KCSS,
+        SFKE.Index.name: SFKE,
+        KSNS.Index.name: KSNS,
+    }
+    if index not in docs.keys():
         raise ValueError(f"Invalid index: {index}")
+
+    docs[index].init(using=client)
+    stories = docs[index].stream_from_corpus()
+
     # --- init an indexer with the Stories --- #
     indexer = Indexer(client, stories, index, batch_size)
     # --- index the corpus --- #

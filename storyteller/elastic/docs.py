@@ -5,7 +5,8 @@ import os
 import json
 from typing import Generator
 from elasticsearch_dsl import Document, Text, Keyword
-from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR
+from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, \
+    KSNS_DIR
 
 
 class Story(Document):
@@ -286,4 +287,75 @@ class KCSS(Story):
 
     class Index:
         name = "kcss_story"
+        settings = Story.settings()
+
+
+class SFKE(Story):
+    """
+    전문분야 한영 말뭉치
+    """
+    manage_no = Keyword()
+
+    @classmethod
+    def stream_from_corpus(cls) -> Generator['SFKE', None, None]:
+        json_path = os.path.join(SFKE_DIR, "sfke.json")
+
+        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
+            corpus_jsons = json.loads(fh.read())
+            for corpus_json in corpus_jsons:
+                for doc in corpus_json:
+                    yield cls(sents=doc['한국어'],
+                              manage_no=doc['sid'])
+
+    class Index:
+        name = "sfke_story"
+        settings = Story.settings()
+
+
+class KSNS(Story):
+    """
+    한국어 SNS
+    """
+    manage_no = Keyword()
+
+    @classmethod
+    def stream_from_corpus(cls) -> Generator['KSNS', None, None]:
+        json_path = os.path.join(KSNS_DIR, "ksns.json")
+
+        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
+            corpus_jsons = json.loads(fh.read())
+            for corpus_json in corpus_jsons:
+                for doc in corpus_json:
+                    yield cls(sents=doc['한국어'],
+                              manage_no=doc['sid'])
+
+    class Index:
+        name = "ksns_story"
+        settings = Story.settings()
+
+
+class KSNS(Story):
+    """
+    한국어 SNS
+    """
+    dialogue_info = Keyword()
+    utterance_id = Keyword()
+
+    @classmethod
+    def stream_from_corpus(cls) -> Generator['KSNS', None, None]:
+        json_path = os.path.join(KSNS_DIR, "ksns.json")
+
+        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
+            corpus_jsons = json.loads(fh.read())
+            for corpus_json in corpus_jsons:
+                for doc in corpus_json['data']:
+                    header = doc['header']
+                    body = doc['body']
+                    sent = ' '.join(list(map(lambda ut: ut['utterance'], body)))
+
+                    yield cls(sents=sent,
+                              dialogue_info=header['dialogueInfo']['dialogueID'])
+
+    class Index:
+        name = "ksns_story"
         settings = Story.settings()
