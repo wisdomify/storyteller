@@ -1,6 +1,8 @@
 import json
 import os
 
+import pandas as pd
+
 from storyteller.paths import DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, BS_DIR, SFKE_DIR, KSNS_DIR, KC_DIR
 
 
@@ -19,12 +21,11 @@ def merge_json_files(on: str, to: str):
     print(len(files))
     for i, f1 in enumerate(files):
         print(i, end=' ')
-        with open(f1, 'r', encoding='utf-8') as infile:
-            try:
-                jf = json.load(infile)
-                result.append(jf)
-            except:
-                continue
+        try:
+            df = pd.read_excel(f1)
+            result.append(df.to_dict('records'))
+        except:
+            continue
 
     with open(to, 'w', encoding='UTF-8-sig') as output_file:
         json.dump(result, output_file, ensure_ascii=False)
