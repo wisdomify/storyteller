@@ -6,7 +6,7 @@ import json
 from typing import Generator
 from elasticsearch_dsl import Document, Text, Keyword
 from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, \
-    KSNS_DIR, KC_DIR
+    KSNS_DIR, KC_DIR, KETS_DIR
 
 
 class Story(Document):
@@ -385,4 +385,28 @@ class KC(Story):
 
     class Index:
         name = "kc_story"
+        settings = Story.settings()
+
+
+class KETS(Story):
+    """
+    한국어-영어 번역 말뭉치 (기술과학)
+    """
+    sn_id = Keyword()
+    file_name = Keyword()
+
+    @classmethod
+    def stream_from_corpus(cls) -> Generator['KETS', None, None]:
+        json_path = os.path.join(KETS_DIR, "kets.json")
+
+        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
+            corpus_jsons = json.loads(fh.read())
+            for corpus_json in corpus_jsons:
+                for doc in corpus_json['data']:
+                    yield cls(sents=doc['ko'],
+                              sn_id=doc['sn'],
+                              file_name=doc['file_name'])
+
+    class Index:
+        name = "kets_story"
         settings = Story.settings()

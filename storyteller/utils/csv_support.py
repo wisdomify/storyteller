@@ -21,6 +21,8 @@ def merge_json_files(on: str, to: str):
     print(len(files))
     for i, f1 in enumerate(files):
         print(i, end=' ')
+        if 'csv' not in f1:
+            continue
         try:
             df = pd.read_excel(f1)
             result.append(df.to_dict('records'))

@@ -1,7 +1,7 @@
 import json
 import os
 
-from storyteller.paths import DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, BS_DIR, SFKE_DIR, KSNS_DIR, KC_DIR
+from storyteller.paths import DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, BS_DIR, SFKE_DIR, KSNS_DIR, KC_DIR, KETS_DIR
 
 
 def get_files(on: str):
@@ -19,6 +19,8 @@ def merge_json_files(on: str, to: str):
     print(len(files))
     for i, f1 in enumerate(files):
         print(i, end=' ')
+        if 'json' not in f1:
+            continue
         with open(f1, 'r', encoding='utf-8') as infile:
             try:
                 jf = json.load(infile)
@@ -31,5 +33,5 @@ def merge_json_files(on: str, to: str):
 
 
 if __name__ == '__main__':
-    merge_json_files(on=os.path.join(KC_DIR),
-                     to=os.path.join(KC_DIR, 'kc.json'))
+    merge_json_files(on=os.path.join(KETS_DIR),
+                     to=os.path.join(KETS_DIR, 'kets.json'))
