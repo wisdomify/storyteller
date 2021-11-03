@@ -14,7 +14,7 @@ CORPORA_DIR = path.join(DATA_DIR, "corpora")
 GK_DIR = path.join(CORPORA_DIR, "gk")  # 일반상식
 SC_DIR = path.join(CORPORA_DIR, "sc")  # 감성대화
 MR_DIR = path.join(CORPORA_DIR, "mr")  # 기계독해
-
+NEWS_DIR = path.join(CORPORA_DIR, "news")  # 뉴스데이터
 
 # wandb - related
 WANDB_DIR = path.join(DATA_DIR, "wandb")

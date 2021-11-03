@@ -3,17 +3,17 @@ for defining Elasticsearch docs and the indices.
 """
 import os
 import json
-from collections import Generator
+from typing import Generator
 from elasticsearch_dsl import Document, Text, Keyword
-from storyteller.paths import GK_DIR, SC_DIR, MR_DIR
+from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, NEWS_DIR
 
 
 class Story(Document):
     # --- common fields --- #
     sents = Text(analyzer="nori_analyzer")
 
-    @staticmethod
-    def stream_from_corpus() -> Generator['Story', None, None]:
+    @classmethod
+    def stream_from_corpus(cls) -> Generator['Story', None, None]:
         """
         :return: a stream of Stories.
         """
@@ -60,7 +60,7 @@ class GK(Story):
     """
     일반 상식 인덱스
     """
-    @staticmethod
+    @classmethod
     def stream_from_corpus() -> Generator['GK', None, None]:
         corpus_json_path = os.path.join(GK_DIR, "ko_wiki_v1_squad.json")
         with open(corpus_json_path, 'r') as fh:
@@ -83,7 +83,7 @@ class SC(Story):
     profile_id = Keyword()
     talk_id = Keyword()
 
-    @staticmethod
+    @classmethod
     def stream_from_corpus() -> Generator['SC', None, None]:
         train_json_path = os.path.join(SC_DIR, "Training", "감성대화말뭉치(최종데이터)_Training.json")
         val_json_path = os.path.join(SC_DIR, "Validation", "감성대화말뭉치(최종데이터)_Validation.json")
@@ -108,7 +108,7 @@ class MR(Story):
     # --- additional fields for MR --- #
     title = Keyword()
 
-    @staticmethod
+    @classmethod
     def stream_from_corpus() -> Generator['MR', None, None]:
         normal_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_normal_squad_all.json")
         no_answer_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_noanswer_squad_all.json")
@@ -125,3 +125,29 @@ class MR(Story):
         name = "mr_story"
         settings = Story.settings()
 
+
+class News(Story):
+    """
+    OPENAPI news data
+    """
+    # --- additional fields for MR --- #
+    title = Keyword()
+    provider = Keyword()
+    date = Keyword()
+
+    @classmethod
+    def stream_from_corpus() -> Generator['News', None, None]:
+        news_data_path = os.path.join(NEWS_DIR, 'news_data.json')
+
+        with open(news_data_path, 'r') as fh:
+            corpus_json = json.loads(fh.read())
+            for sample in corpus_json['data']:
+                print("sample :", sample)
+                yield News(sents=sample['sent'],
+                           title=sample['title'],
+                           provider=sample['provider'],
+                           date=sample['date'])
+
+    class Index:
+        name = "news_story"
+        settings = Story.settings()
