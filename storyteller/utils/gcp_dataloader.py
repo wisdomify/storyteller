@@ -11,7 +11,8 @@ from google.cloud.storage import Blob
 
 from copy import copy
 
-from storyteller.paths import BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, KSNS_DIR, KC_DIR, KETS_DIR
+from storyteller.paths import BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, KSNS_DIR, KC_DIR, KETS_DIR, \
+    KEPT_DIR
 
 
 class GCPStorage:
@@ -151,6 +152,6 @@ class GCPStorage:
 
 if __name__ == '__main__':
     gcp_storage = GCPStorage('wisdomify')
-    gcp_storage.download('story/elastic/한국어-영어 번역 말뭉치(기술과학)', KETS_DIR, unzip=True)
+    gcp_storage.download('story/elastic/한국어-영어 번역(병렬) 말뭉치', KEPT_DIR, unzip=True)
 
 

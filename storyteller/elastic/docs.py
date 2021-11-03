@@ -6,7 +6,7 @@ import json
 from typing import Generator
 from elasticsearch_dsl import Document, Text, Keyword
 from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, \
-    KSNS_DIR, KC_DIR, KETS_DIR
+    KSNS_DIR, KC_DIR, KETS_DIR, KEPT_DIR
 
 
 class Story(Document):
@@ -73,7 +73,7 @@ class GK(Story):
                 yield cls(sents=paragraph['context'])
 
     class Index:
-        name = "gk_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -99,7 +99,7 @@ class SC(Story):
                               talk_id=sample['talk']['id']['talk-id'])
 
     class Index:
-        name = "sc_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -124,7 +124,7 @@ class MR(Story):
                               title=sample['title'])
 
     class Index:
-        name = "mr_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -147,7 +147,7 @@ class BS(Story):
                           passage_id=sample['passage_id'])
 
     class Index:
-        name = "bs_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -174,7 +174,7 @@ class DS(Story):
                                   text_index=text['index'])
 
     class Index:
-        name = "ds_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -220,7 +220,7 @@ class SFC(Story):
                                   title=doc['title'])
 
     class Index:
-        name = "sfc_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -242,7 +242,7 @@ class KESS(Story):
                               sn_id=doc['sn'])
 
     class Index:
-        name = "kess_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -264,7 +264,7 @@ class KJ(Story):
                               manage_no=doc['관리번호'])
 
     class Index:
-        name = "kj_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -286,7 +286,7 @@ class KCSS(Story):
                               manage_no=doc['관리번호'])
 
     class Index:
-        name = "kcss_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -308,7 +308,7 @@ class SFKE(Story):
                               manage_no=doc['sid'])
 
     class Index:
-        name = "sfke_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -330,7 +330,7 @@ class KSNS(Story):
                               manage_no=doc['sid'])
 
     class Index:
-        name = "ksns_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -357,7 +357,7 @@ class KSNS(Story):
                               dialogue_info=header['dialogueInfo']['dialogueID'])
 
     class Index:
-        name = "ksns_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -384,7 +384,7 @@ class KC(Story):
                               sentence_id=doc['SENTENCEID'])
 
     class Index:
-        name = "kc_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
 
@@ -408,5 +408,30 @@ class KETS(Story):
                               file_name=doc['file_name'])
 
     class Index:
-        name = "kets_story"
+        name = f"{__qualname__.split('.')[0].lower()}_story"
+        settings = Story.settings()
+
+
+class KEPT(Story):
+    """
+    한국어-영어 번역(병렬) 말뭉치
+    """
+    sentence_id = Keyword()
+
+    @classmethod
+    def stream_from_corpus(cls) -> Generator['KEPT', None, None]:
+        json_path = os.path.join(KEPT_DIR, "kept.json")
+
+        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
+            corpus_jsons = json.loads(fh.read())
+            for corpus_json in corpus_jsons:
+                for doc in corpus_json:
+                    if 'ID' not in doc.keys():
+                        continue
+
+                    yield cls(sents=doc['원문'],
+                              sentence_id=doc['ID'])
+
+    class Index:
+        name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()

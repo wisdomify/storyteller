@@ -25,6 +25,7 @@ SFKE_DIR = path.join(CORPORA_DIR, "sfke")  # 전문분야 한영 말뭉치
 KSNS_DIR = path.join(CORPORA_DIR, "ksns")  # 한국어 SNS
 KC_DIR = path.join(CORPORA_DIR, "kc")  # 한국어 대화
 KETS_DIR = path.join(CORPORA_DIR, "kets")  # 한국어-영어 번역 말뭉치 (기술과학)
+KEPT_DIR = path.join(CORPORA_DIR, "kept")  # 한국어-영어 번역(병렬) 말뭉치
 
 
 # wandb - related
