@@ -3,7 +3,7 @@ index a pre-downloaded corpus into elasticsearch.
 """
 import argparse
 from storyteller.connectors import connect_to_es
-from storyteller.elastic.docs import GK, SC, MR, News, Story
+from storyteller.elastic.docs import GK, SC, MR, News
 from storyteller.elastic.indexer import Indexer
 
 

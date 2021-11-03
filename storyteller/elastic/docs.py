@@ -135,19 +135,17 @@ class News(Story):
     provider = Keyword()
     date = Keyword()
 
-    @staticmethod
-    def stream_from_corpus(cls) -> Generator['News', None, None]:
+    def stream_from_corpus() -> Generator['News', None, None]:
         news_data_path = os.path.join(NEWS_DIR, 'news_data.json')
 
         with open(news_data_path, 'r') as fh:
             corpus_json = json.loads(fh.read())
             for sample in corpus_json['data']:
-                yield cls(News(sents=sample['sent'],
-                               title=sample['title'],
-                               provider=sample['provider'],
-                               date=sample['date']))
-        # TODO:
-        pass
+                print("sample :", sample)
+                yield News(sents=sample['sent'],
+                           title=sample['title'],
+                           provider=sample['provider'],
+                           date=sample['date'])
 
     class Index:
         name = "news_story"
