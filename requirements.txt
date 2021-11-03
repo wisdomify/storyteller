@@ -45,7 +45,7 @@ ipython-genutils==0.2.0
 ipywidgets==7.6.5
 jedi==0.18.0
 Jinja2==3.0.2
-joblib @ file:///home/conda/feedstock_root/build_artifacts/joblib_1633637554808/work
+# joblib @ file:///home/conda/feedstock_root/build_artifacts/joblib_1633637554808/work
 jsonschema==4.1.2
 jupyter==1.0.0
 jupyter-client==7.0.6
@@ -96,8 +96,8 @@ QtPy==1.11.2
 requests==2.26.0
 retry-decorator==1.1.1
 rsa==4.7.2
-scikit-learn @ file:///Users/runner/miniforge3/conda-bld/scikit-learn_1632611447519/work
-scipy @ file:///Users/runner/miniforge3/conda-bld/scipy_1633644994244/work
+# scikit-learn @ file:///Users/runner/miniforge3/conda-bld/scikit-learn_1632611447519/work
+# scipy @ file:///Users/runner/miniforge3/conda-bld/scipy_1633644994244/work
 Send2Trash==1.8.0
 sentry-sdk==1.4.3
 shortuuid==1.0.1
@@ -108,7 +108,7 @@ subprocess32==3.5.4
 termcolor==1.1.0
 terminado==0.12.1
 testpath==0.5.0
-threadpoolctl @ file:///home/conda/feedstock_root/build_artifacts/threadpoolctl_1633102299089/work
+# threadpoolctl @ file:///home/conda/feedstock_root/build_artifacts/threadpoolctl_1633102299089/work
 tornado==6.1
 tqdm==4.62.3
 traitlets==5.1.1

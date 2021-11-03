@@ -3,7 +3,7 @@ for defining Elasticsearch docs and the indices.
 """
 import os
 import json
-from collections import Generator
+from typing import Generator
 from elasticsearch_dsl import Document, Text, Keyword
 from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, NEWS_DIR
 
@@ -13,7 +13,7 @@ class Story(Document):
     sents = Text(analyzer="nori_analyzer")
 
     @staticmethod
-    def stream_from_corpus() -> Generator['Story', None, None]:
+    def stream_from_corpus(cls) -> Generator['Story', None, None]:
         """
         :return: a stream of Stories.
         """
@@ -128,14 +128,24 @@ class MR(Story):
 
 class News(Story):
     """
-
+    OPENAPI news data
     """
-    # ---- 추가필드 (어떤 언론사, 날짜) --- #
-    # TODO:
+    # --- additional fields for MR --- #
+    title = Keyword()
+    provider = Keyword()
+    date = Keyword()
 
     @staticmethod
-    def stream_from_corpus() -> Generator['News', None, None]:
-        # use NEWS_DIR.
+    def stream_from_corpus(cls) -> Generator['News', None, None]:
+        news_data_path = os.path.join(NEWS_DIR, 'news_data.json')
+
+        with open(news_data_path, 'r') as fh:
+            corpus_json = json.loads(fh.read())
+            for sample in corpus_json['data']:
+                yield cls(News(sents=sample['sent'],
+                               title=sample['title'],
+                               provider=sample['provider'],
+                               date=sample['date']))
         # TODO:
         pass
 
