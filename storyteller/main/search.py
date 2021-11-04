@@ -5,6 +5,7 @@ import argparse
 from storyteller.connectors import connect_to_es
 from storyteller.elastic.docs import Story
 from storyteller.elastic.searcher import Searcher
+from storyteller.elastic.docs import Story
 
 
 def main():

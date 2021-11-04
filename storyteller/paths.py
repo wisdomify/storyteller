@@ -13,6 +13,7 @@ CORPORA_DIR = path.join(DATA_DIR, "corpora")
 # corpora
 SC_DIR = path.join(CORPORA_DIR, "sc")  # 감성대화
 MR_DIR = path.join(CORPORA_DIR, "mr")  # 기계독해
+
 DS_DIR = path.join(CORPORA_DIR, "ds")   # 문서요약 텍스트
 SFC_DIR = path.join(CORPORA_DIR, "sfc")     # 전문분야 말뭉치
 KESS_DIR = path.join(CORPORA_DIR, "kess")     # 한국어-영어 번역 말뭉치 (사회과학)
@@ -26,6 +27,8 @@ KSNS_DIR = path.join(CORPORA_DIR, "ksns")  # 한국어 SNS
 KC_DIR = path.join(CORPORA_DIR, "kc")  # 한국어 대화
 KETS_DIR = path.join(CORPORA_DIR, "kets")  # 한국어-영어 번역 말뭉치 (기술과학)
 KEPT_DIR = path.join(CORPORA_DIR, "kept")  # 한국어-영어 번역(병렬) 말뭉치
+
+NEWS_DIR = path.join(CORPORA_DIR, "news")  # 뉴스데이터
 
 
 # wandb - related

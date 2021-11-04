@@ -3,7 +3,7 @@ index a pre-downloaded corpus into elasticsearch.
 """
 import argparse
 from storyteller.connectors import connect_to_es
-from storyteller.elastic.docs import GK, SC, MR, BS, DS, SFC, KESS, KJ, KCSS, SFKE, KSNS, KC, KETS, KEPT
+from storyteller.elastic.docs import GK, SC, MR, BS, DS, SFC, KESS, KJ, KCSS, SFKE, KSNS, KC, KETS, KEPT, News
 from storyteller.elastic.indexer import Indexer
 
 
@@ -24,6 +24,7 @@ def main():
         r = client.indices.delete(index=index)
         print(f"Deleted {index} - {r}")
     # --- create the mappings for indices, and setup a stream of Stories --- #
+
     docs = {
         GK.Index.name: GK,
         SC.Index.name: SC,

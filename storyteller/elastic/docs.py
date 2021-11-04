@@ -5,8 +5,10 @@ import os
 import json
 from typing import Generator
 from elasticsearch_dsl import Document, Text, Keyword
+
 from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, \
-    KSNS_DIR, KC_DIR, KETS_DIR, KEPT_DIR
+    KSNS_DIR, KC_DIR, KETS_DIR, KEPT_DIR, NEWS_DIR
+
 
 
 class Story(Document):
@@ -435,3 +437,30 @@ class KEPT(Story):
     class Index:
         name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
+
+class News(Story):
+    """
+    OPENAPI news data
+    """
+    # --- additional fields for NEWS --- #
+    title = Keyword()
+    provider = Keyword()
+    date = Keyword()
+
+    @classmethod
+    def stream_from_corpus(cls) -> Generator['News', None, None]:
+        news_data_path = os.path.join(NEWS_DIR, 'news_data.json')
+
+        with open(news_data_path, 'r') as fh:
+            corpus_json = json.loads(fh.read())
+            for sample in corpus_json['data']:
+                print("sample :", sample)
+                yield cls(sents=sample['sent'],
+                           title=sample['title'],
+                           provider=sample['provider'],
+                           date=sample['date'])
+
+    class Index:
+        name = f"{__qualname__.split('.')[0].lower()}_story"
+        settings = Story.settings()
+
