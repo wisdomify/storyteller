@@ -1,5 +1,4 @@
-from collections import Generator
-from typing import List
+from typing import List, Generator
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 from elasticsearch_dsl import Document

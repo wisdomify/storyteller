@@ -3,6 +3,7 @@ searches for
 """
 import argparse
 from storyteller.connectors import connect_to_es
+from storyteller.elastic.docs import Story
 from storyteller.elastic.searcher import Searcher
 from storyteller.elastic.docs import Story
 
@@ -11,7 +12,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--w", type=str,
                         # why can't I search for stopwords?
-                        default="산 넘어 산")
+                        default="꿩 대신 닭")
     parser.add_argument("--i", type=str,
                         # just comma-enumerate the indices for multi-indices search
                         # https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multiple-indices.html
