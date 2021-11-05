@@ -3,12 +3,11 @@ for defining Elasticsearch docs and the indices.
 """
 import os
 import json
-from typing import Generator
+from typing import Generator, List
 from elasticsearch_dsl import Document, Text, Keyword
 
 from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, \
     KSNS_DIR, KC_DIR, KETS_DIR, KEPT_DIR, NEWS_DIR
-
 
 
 class Story(Document):
@@ -57,6 +56,10 @@ class Story(Document):
                 }
             }
         }
+
+    @staticmethod
+    def all_indices() -> List[str]:
+        return [cls.Index.name for cls in Story.__subclasses__()]
 
 
 class GK(Story):
@@ -119,7 +122,7 @@ class MR(Story):
         clue_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_clue0529_squad_all.json")
 
         for json_path in (normal_json_path, no_answer_json_path, clue_json_path):
-            with open(normal_json_path, 'r') as fh:
+            with open(json_path, 'r') as fh:
                 corpus_json = json.loads(fh.read())
                 for sample in corpus_json['data']:
                     yield cls(sents=sample['paragraphs'][0]['context'],
@@ -318,28 +321,6 @@ class KSNS(Story):
     """
     한국어 SNS
     """
-    manage_no = Keyword()
-
-    @classmethod
-    def stream_from_corpus(cls) -> Generator['KSNS', None, None]:
-        json_path = os.path.join(KSNS_DIR, "ksns.json")
-
-        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
-            corpus_jsons = json.loads(fh.read())
-            for corpus_json in corpus_jsons:
-                for doc in corpus_json:
-                    yield cls(sents=doc['한국어'],
-                              manage_no=doc['sid'])
-
-    class Index:
-        name = f"{__qualname__.split('.')[0].lower()}_story"
-        settings = Story.settings()
-
-
-class KSNS(Story):
-    """
-    한국어 SNS
-    """
     dialogue_info = Keyword()
     utterance_id = Keyword()
 
@@ -438,6 +419,7 @@ class KEPT(Story):
         name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
+
 class News(Story):
     """
     OPENAPI news data
@@ -456,11 +438,10 @@ class News(Story):
             for sample in corpus_json['data']:
                 print("sample :", sample)
                 yield cls(sents=sample['sent'],
-                           title=sample['title'],
-                           provider=sample['provider'],
-                           date=sample['date'])
+                          title=sample['title'],
+                          provider=sample['provider'],
+                          date=sample['date'])
 
     class Index:
         name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
-
