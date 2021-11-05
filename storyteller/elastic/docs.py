@@ -4,11 +4,12 @@ for defining Elasticsearch docs and the indices.
 import os
 import json
 from typing import Generator
+
+import pandas as pd
 from elasticsearch_dsl import Document, Text, Keyword
 
 from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, \
-    KSNS_DIR, KC_DIR, KETS_DIR, KEPT_DIR, NEWS_DIR
-
+    KSNS_DIR, KC_DIR, KETS_DIR, KEPT_DIR, NEWS_DIR, KOREA_UNIV_DIR
 
 
 class Story(Document):
@@ -438,6 +439,7 @@ class KEPT(Story):
         name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
+
 class News(Story):
     """
     OPENAPI news data
@@ -456,11 +458,43 @@ class News(Story):
             for sample in corpus_json['data']:
                 print("sample :", sample)
                 yield cls(sents=sample['sent'],
-                           title=sample['title'],
-                           provider=sample['provider'],
-                           date=sample['date'])
+                          title=sample['title'],
+                          provider=sample['provider'],
+                          date=sample['date'])
 
     class Index:
         name = f"{__qualname__.split('.')[0].lower()}_story"
         settings = Story.settings()
 
+
+class KOREA_UNIV(Story):
+    """
+    Korea university corpus
+    """
+    # --- additional fields for NEWS --- #
+    eg_id = Keyword()
+
+    @classmethod
+    def stream_from_corpus(cls) -> Generator['KOREA_UNIV', None, None]:
+        csv_files = list()
+        for root, sub_dirs, files in os.walk(KOREA_UNIV_DIR):
+            if files:
+                csv_files += list(map(lambda f: os.path.join(root, f), files))
+
+        for csv_file in csv_files:
+            if csv_file.split('.')[-1] == 'tsv':
+                df = pd.read_csv(csv_file, sep='\t')
+            else:
+                df = pd.read_csv(csv_file)
+            print(csv_file, len(df))
+            for _, row in df.iterrows():
+                if 'eg_id' not in row.keys():
+                    yield cls(sents=row['full'].replace('/n', ''),
+                              eg_id=None)
+                else:
+                    yield cls(sents=row['full'].replace('/n', ''),
+                              eg_id=row['eg_id'])
+
+    class Index:
+        name = f"{__qualname__.split('.')[0].lower()}_story"
+        settings = Story.settings()

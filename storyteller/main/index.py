@@ -3,16 +3,17 @@ index a pre-downloaded corpus into elasticsearch.
 """
 import argparse
 from storyteller.connectors import connect_to_es
-from storyteller.elastic.docs import GK, SC, MR, BS, DS, SFC, KESS, KJ, KCSS, SFKE, KSNS, KC, KETS, KEPT, News
+from storyteller.elastic.docs import GK, SC, MR, BS, DS, SFC, KESS, KJ, KCSS, SFKE, KSNS, KC, KETS, KEPT, News, \
+    KOREA_UNIV
 from storyteller.elastic.indexer import Indexer
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--index", type=str,
-                        default="kept_story")
+                        default="korea_univ_story")
     parser.add_argument("--batch_size", type=int,
-                        default=2000)
+                        default=1000)
     # --- parse the arguments --- #
     args = parser.parse_args()
     index: str = args.index
@@ -40,6 +41,7 @@ def main():
         KC.Index.name: KC,
         KETS.Index.name: KETS,
         KEPT.Index.name: KEPT,
+        KOREA_UNIV.Index.name: KOREA_UNIV
     }
     if index not in docs.keys():
         raise ValueError(f"Invalid index: {index}")
