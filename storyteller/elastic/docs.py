@@ -119,12 +119,13 @@ class MR(Story):
         no_answer_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_noanswer_squad_all.json")
         clue_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_clue0529_squad_all.json")
 
-        for _ in (normal_json_path, no_answer_json_path, clue_json_path):
-            with open(normal_json_path, 'r') as fh:
-                corpus_json = json.loads(fh.read())
-                for sample in corpus_json['data']:
-                    yield cls(sents=sample['paragraphs'][0]['context'],
-                              title=sample['title'])
+        for json_path in (normal_json_path, no_answer_json_path, clue_json_path):
+            for _ in (json_path, no_answer_json_path, clue_json_path):
+                with open(json_path, 'r') as fh:
+                    corpus_json = json.loads(fh.read())
+                    for sample in corpus_json['data']:
+                        yield cls(sents=sample['paragraphs'][0]['context'],
+                                  title=sample['title'])
 
     class Index:
         name = f"{__qualname__.split('.')[0].lower()}_story"
@@ -445,7 +446,7 @@ class News(Story):
         settings = Story.settings()
 
 
-class KOREA_UNIV(Story):
+class KUNIV(Story):
     """
     Korea university corpus
     """
@@ -453,7 +454,7 @@ class KOREA_UNIV(Story):
     eg_id = Keyword()
 
     @classmethod
-    def stream_from_corpus(cls) -> Generator['KOREA_UNIV', None, None]:
+    def stream_from_corpus(cls) -> Generator['KUNIV', None, None]:
         csv_files = list()
         for root, sub_dirs, files in os.walk(KOREA_UNIV_DIR):
             if files:
