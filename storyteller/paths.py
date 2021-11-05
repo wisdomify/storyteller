@@ -27,6 +27,8 @@ KETS_DIR = path.join(CORPORA_DIR, "kets")  # 한국어-영어 번역 말뭉치 (
 KEPT_DIR = path.join(CORPORA_DIR, "kept")  # 한국어-영어 번역(병렬) 말뭉치
 NEWS_DIR = path.join(CORPORA_DIR, "news")  # 뉴스데이터
 
+KOREA_UNIV_DIR = path.join(CORPORA_DIR, "korea_univ")  # 고려대 코퍼스
+
 
 # wandb - related
 WANDB_DIR = path.join(DATA_DIR, "wandb")

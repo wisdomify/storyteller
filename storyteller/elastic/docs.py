@@ -3,11 +3,11 @@ for defining Elasticsearch docs and the indices.
 """
 import os
 import json
+import pandas as pd
 from typing import Generator, List
 from elasticsearch_dsl import Document, Text, Keyword
-
 from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, \
-    KSNS_DIR, KC_DIR, KETS_DIR, KEPT_DIR, NEWS_DIR
+    KSNS_DIR, KC_DIR, KETS_DIR, KEPT_DIR, NEWS_DIR, KOREA_UNIV_DIR
 
 
 class Story(Document):
@@ -441,6 +441,43 @@ class News(Story):
                           title=sample['title'],
                           provider=sample['provider'],
                           date=sample['date'])
+
+    class Index:
+        name = f"{__qualname__.split('.')[0].lower()}_story"
+        settings = Story.settings()
+
+
+class KUNIV(Story):
+    """
+    Korea university corpus
+    """
+    # --- additional fields for NEWS --- #
+    eg_id = Keyword()
+
+    @classmethod
+    def stream_from_corpus(cls) -> Generator['KUNIV', None, None]:
+        csv_files = list()
+        for root, sub_dirs, files in os.walk(KOREA_UNIV_DIR):
+            if files:
+                csv_files += list(map(lambda f: os.path.join(root, f), files))
+
+        total_df = pd.DataFrame()
+        for csv_file in csv_files:
+            if csv_file.split('.')[-1] == 'tsv':
+                df = pd.read_csv(csv_file, sep='\t')
+            else:
+                df = pd.read_csv(csv_file)
+
+            if 'eg_id' not in df.keys():
+                df['eg_id'] = -1
+
+            total_df = total_df.append(df, ignore_index=True)
+
+        total_df = total_df.drop_duplicates(subset=['full'])
+        print(f"total: {len(total_df)}")
+        for _, row in total_df.iterrows():
+            yield cls(sents=row['full'].replace('/n', ''),
+                      eg_id=row['eg_id'])
 
     class Index:
         name = f"{__qualname__.split('.')[0].lower()}_story"
