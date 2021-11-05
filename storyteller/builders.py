@@ -1,50 +1,40 @@
-import pandas as pd
 import wandb
-from wandb.wandb_run import Run
+import pandas as pd
 from storyteller.connectors import connect_to_es
+from storyteller.downloaders import dl_wisdoms, dl_wisdom2test, dl_wisdom2def_raw, dl_wisdom2eg_raw
 from storyteller.elastic.crud import Searcher
-from storyteller.preprocess import augment, split_train_val, parse, normalise
-from storyteller.downloaders import (
-    dl_wisdoms,
-    dl_wisdom2test,
-    dl_wisdom2def_raw,
-    dl_wisdom2eg_raw
-)
+from storyteller.preprocess import split_train_val, normalise, augment, upsample, parse
 
 
-class Uploader:
+class ArtifactBuilder:
 
-    def __init__(self, run: Run):
-        self.run = run
-
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> wandb.Artifact:
         raise NotImplementedError
 
 
-class WisdomsUploader(Uploader):
+class WisdomsBuilder(ArtifactBuilder):
 
-    def __call__(self, ver: str):
+    def __call__(self, ver: str) -> wandb.Artifact:
         artifact = wandb.Artifact(name="wisdoms", type="dataset")
         wisdoms_df = dl_wisdoms(ver)
         table = wandb.Table(dataframe=wisdoms_df)
         artifact.add(table, name="wisdoms")  # just wisdoms
-        self.run.log_artifact(artifact)
+        return artifact
 
 
-class Wisdom2TestUploader(Uploader):
+class Wisdom2TestBuilder(ArtifactBuilder):
 
-    def __call__(self, ver: str):
+    def __call__(self, ver: str) -> wandb.Artifact:
         artifact = wandb.Artifact(name="wisdom2test", type="dataset")
         wisdom2test_df = dl_wisdom2test(ver)
         table = wandb.Table(dataframe=wisdom2test_df)
         artifact.add(table, name="wisdom2test")  # just wisdoms
-        self.run.log_artifact(artifact)
+        return artifact
 
 
-class Wisdom2DescUploader(Uploader):
+class Wisdom2DescBuilder(ArtifactBuilder):
 
-    def __init__(self, run: Run, train_ratio: float, seed: int):
-        super().__init__(run)
+    def __init__(self, train_ratio: float, seed: int):
         self.train_ratio = train_ratio
         self.seed = seed
 
@@ -61,7 +51,7 @@ class Wisdom2DescUploader(Uploader):
         artifact.add(all_table, "all")
         artifact.add(train_table, "train")
         artifact.add(val_table, "val")
-        self.run.log_artifact(artifact)
+        return artifact
 
     @staticmethod
     def artifact() -> wandb.Artifact:
@@ -76,7 +66,7 @@ class Wisdom2DescUploader(Uploader):
         raise NotImplementedError
 
 
-class Wisdom2DefUploader(Wisdom2DescUploader):
+class Wisdom2DefBuilder(Wisdom2DescBuilder):
 
     @staticmethod
     def artifact() -> wandb.Artifact:
@@ -88,11 +78,13 @@ class Wisdom2DefUploader(Wisdom2DescUploader):
 
     @staticmethod
     def preprocess(raw_df: pd.DataFrame) -> pd.DataFrame:
+        # as for wisdom2def, we don't need parsing.
         return raw_df.pipe(normalise)\
-                     .pipe(augment)
+                     .pipe(augment)\
+                     .pipe(upsample)
 
 
-class Wisdom2EgUploader(Wisdom2DescUploader):
+class Wisdom2EgBuilder(Wisdom2DescBuilder):
 
     @staticmethod
     def artifact() -> wandb.Artifact:
@@ -108,4 +100,5 @@ class Wisdom2EgUploader(Wisdom2DescUploader):
     def preprocess(raw_df: pd.DataFrame) -> pd.DataFrame:
         return raw_df.pipe(parse)\
                      .pipe(normalise)\
-                     .pipe(augment)
+                     .pipe(augment)\
+                     .pipe(upsample)

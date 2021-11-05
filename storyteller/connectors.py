@@ -20,7 +20,6 @@ from google.cloud import storage
 from google.cloud.storage import Client, Bucket
 
 
-
 # --- elasticsearch --- #
 def connect_to_es() -> Elasticsearch:
     es = Elasticsearch(ES_CLOUD_ID, http_auth=(ES_USERNAME, ES_PASSWORD))

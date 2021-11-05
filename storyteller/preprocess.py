@@ -30,6 +30,11 @@ def normalise(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def upsample(df: pd.DataFrame) -> pd.DataFrame:
+    # TODO: implement upsampling
+    return df
+
+
 def split_train_val(df: pd.DataFrame, train_ratio: float, seed: int) -> Tuple[pd.DataFrame, pd.DataFrame]:
     total = len(df)
     train_size = int(total * train_ratio)
