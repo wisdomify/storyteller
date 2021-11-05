@@ -119,7 +119,7 @@ class MR(Story):
         no_answer_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_noanswer_squad_all.json")
         clue_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_clue0529_squad_all.json")
 
-        for json_path in (normal_json_path, no_answer_json_path, clue_json_path):
+        for _ in (normal_json_path, no_answer_json_path, clue_json_path):
             with open(normal_json_path, 'r') as fh:
                 corpus_json = json.loads(fh.read())
                 for sample in corpus_json['data']:
@@ -302,28 +302,6 @@ class SFKE(Story):
     @classmethod
     def stream_from_corpus(cls) -> Generator['SFKE', None, None]:
         json_path = os.path.join(SFKE_DIR, "sfke.json")
-
-        with open(json_path, 'r', encoding='UTF-8-sig') as fh:
-            corpus_jsons = json.loads(fh.read())
-            for corpus_json in corpus_jsons:
-                for doc in corpus_json:
-                    yield cls(sents=doc['한국어'],
-                              manage_no=doc['sid'])
-
-    class Index:
-        name = f"{__qualname__.split('.')[0].lower()}_story"
-        settings = Story.settings()
-
-
-class KSNS(Story):
-    """
-    한국어 SNS
-    """
-    manage_no = Keyword()
-
-    @classmethod
-    def stream_from_corpus(cls) -> Generator['KSNS', None, None]:
-        json_path = os.path.join(KSNS_DIR, "ksns.json")
 
         with open(json_path, 'r', encoding='UTF-8-sig') as fh:
             corpus_jsons = json.loads(fh.read())
