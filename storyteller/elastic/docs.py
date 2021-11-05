@@ -120,7 +120,6 @@ class MR(Story):
         clue_json_path = os.path.join(MR_DIR, "기계독해분야", "ko_nia_clue0529_squad_all.json")
 
         for json_path in (normal_json_path, no_answer_json_path, clue_json_path):
-            for _ in (json_path, no_answer_json_path, clue_json_path):
                 with open(json_path, 'r') as fh:
                     corpus_json = json.loads(fh.read())
                     for sample in corpus_json['data']:
