@@ -481,19 +481,23 @@ class KOREA_UNIV(Story):
             if files:
                 csv_files += list(map(lambda f: os.path.join(root, f), files))
 
+        total_df = pd.DataFrame()
         for csv_file in csv_files:
             if csv_file.split('.')[-1] == 'tsv':
                 df = pd.read_csv(csv_file, sep='\t')
             else:
                 df = pd.read_csv(csv_file)
-            print(csv_file, len(df))
-            for _, row in df.iterrows():
-                if 'eg_id' not in row.keys():
-                    yield cls(sents=row['full'].replace('/n', ''),
-                              eg_id=None)
-                else:
-                    yield cls(sents=row['full'].replace('/n', ''),
-                              eg_id=row['eg_id'])
+
+            if 'eg_id' not in df.keys():
+                df['eg_id'] = -1
+
+            total_df = total_df.append(df, ignore_index=True)
+
+        total_df = total_df.drop_duplicates(subset=['full'])
+        print(f"total: {len(total_df)}")
+        for _, row in total_df.iterrows():
+            yield cls(sents=row['full'].replace('/n', ''),
+                      eg_id=row['eg_id'])
 
     class Index:
         name = f"{__qualname__.split('.')[0].lower()}_story"
