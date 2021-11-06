@@ -3,30 +3,29 @@ searches for
 """
 import argparse
 from storyteller.connectors import connect_to_es
-from storyteller.elastic.docs import Story
-from storyteller.elastic.searcher import Searcher
+from storyteller.elastic.crud import Searcher
 from storyteller.elastic.docs import Story
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--w", type=str,
+    parser.add_argument("--wisdom", type=str,
                         # why can't I search for stopwords?
                         default="꿩 대신 닭")
-    parser.add_argument("--i", type=str,
+    parser.add_argument("--index", type=str,
                         # just comma-enumerate the indices for multi-indices search
                         # https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multiple-indices.html
-                        default=",".join([cls.Index.name for cls in Story.__subclasses__()]))
-    parser.add_argument("--s", type=int,
+                        default=",".join(Story.all_indices()))
+    parser.add_argument("--size", type=int,
                         # 10000 is the maximum
                         default=10000)
     args = parser.parse_args()
-    wisdom: str = args.w
-    indices: str = args.i
-    size: int = args.s
+    wisdom: str = args.wisdom
+    index: str = args.index
+    size: int = args.size
     # --- instantiate a searcher --- #
     searcher = Searcher(connect_to_es())
-    res = searcher(wisdom, indices, size)
+    res = searcher(wisdom, index, size)
     print(res['hits']['total'])
     for hit in res['hits']['hits']:
         # also display which indices it came from
