@@ -10,7 +10,7 @@ from storyteller.connectors import connect_to_wandb
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--name", type=str,
-                        default="wisdom2def")
+                        default="wisdom2eg")
     parser.add_argument("--ver", type=str,
                         default="v0")
     parser.add_argument("--train_ratio", type=float,
@@ -25,7 +25,7 @@ def main():
     seed: int = args.seed
 
     # --- instantiate an uploader --- #
-    run = connect_to_wandb(name="storyteller.main.upload")
+    # run = connect_to_wandb(name="storyteller.main.upload")
     if name == "wisdoms":
         artifact = WisdomsBuilder()(ver)
     # --- instantiate an appropriate uploader --- #
@@ -38,7 +38,7 @@ def main():
     else:
         raise ValueError
     # --- upload the given version --- #
-    run.log_artifact(artifact)
+    # run.log_artifact(artifact)
 
 
 if __name__ == '__main__':
