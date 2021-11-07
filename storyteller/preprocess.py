@@ -16,21 +16,17 @@ def parse(df: pd.DataFrame) -> pd.DataFrame:
     :param df: raw_df includes 'wisdom' and 'eg' field
     :return: 'eg' field parsed df
     """
-    return df.apply(get_highlighted_hits, axis=1)\
-        .explode('eg')
 
+    df['eg'] = df['eg'].apply(
+        lambda r: list(map(
+            lambda hit: re.sub(r"<em>.*</em>", "[WISDOM]", hit['highlight']['sents'][0]),
+            json.loads(r)['hits']['hits']
+        ))
+    )
 
-def get_highlighted_hits(df: pd.DataFrame) -> pd.DataFrame:
-    df['eg'] = list(map(
-        lambda hit: convert_em_to_wisdom(hit['highlight']['sents'][0]),
-        json.loads(df['eg'])['hits']['hits']
-    ))
+    df = df.explode('eg')
 
     return df
-
-
-def convert_em_to_wisdom(highlight: str) -> str:
-    return re.sub(r"<em>.*</em>", "[WISDOM]", highlight)
 
 
 def normalise(df: pd.DataFrame) -> pd.DataFrame:
