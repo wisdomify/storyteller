@@ -18,12 +18,18 @@ def parse(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     df['eg'] = df['eg'].apply(
+        # return list of example only on 'eg' column (proverb is converted to [WISDOM])
         lambda r: list(map(
+            # while iterating list of 'hits'
+            # convert <em> ... lalib ... </em> to [WISDOM]
             lambda hit: re.sub(r"<em>.*</em>", "[WISDOM]", hit['highlight']['sents'][0]),
+            # loading json to dict -> taking dict['hits']['hits']
             json.loads(r)['hits']['hits']
         ))
     )
 
+    # 'eg' column contains list object
+    # -> converted to single value with multiple columns
     df = df.explode('eg')
 
     return df
