@@ -12,7 +12,7 @@ def main():
     parser.add_argument("--name", type=str,
                         default="wisdom2def")
     parser.add_argument("--ver", type=str,
-                        default="v0")
+                        default="v1")
     parser.add_argument("--train_ratio", type=float,
                         default=0.9)
     parser.add_argument("--seed", type=int,

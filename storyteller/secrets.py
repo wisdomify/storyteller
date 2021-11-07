@@ -17,12 +17,6 @@ WANDB_API_KEY = os.getenv("WANDB_API_KEY")
 WANDB_ENTITY_NAME = os.getenv("WANDB_ENTITY_NAME")
 WANDB_PROJECT_NAME = os.getenv("WANDB_PROJECT_NAME")
 
-# --- url's --- #
-WISDOM2DEF_RAW_V0 = os.getenv("WISDOM2DEF_RAW_V0")
-WISDOMIFY_TEST_V0 = os.getenv("WISDOMIFY_TEST_V0")
-WISDOMS_V0 = os.getenv("WISDOMS_V0")
-WISDOMS_V1 = os.getenv("WISDOMS_V1")
-
 # --- news_api --- #
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 
