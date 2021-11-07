@@ -35,11 +35,30 @@ def upsample(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def split_train_val(df: pd.DataFrame, train_ratio: float, seed: int) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def cleanse(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    사용자가 입력하지 않을만한 것들 - 모델에게 혼란을 줄 수 있는 부분은 다 전처리를 진행하기.
+    e.g. 올해 인수합병(M & A) 시장.. -> 올해 인수합병 시장
+    :param df:
+    :return:
+    """
+    # TODO: implement cleansing
+    return df
+
+
+def stratified_split(df: pd.DataFrame, ratio: float, seed: int) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    stratified-split the given df into two df's.
+    :param df:
+    :param ratio:
+    :param seed:
+    :return:
+    """
     total = len(df)
-    train_size = int(total * train_ratio)
-    val_size = total - train_size
-    train_df, val_df = train_test_split(df, train_size=train_size,
-                                        test_size=val_size, random_state=seed,
-                                        shuffle=True)
-    return train_df, val_df
+    ratio_size = int(total * ratio)
+    other_size = total - ratio_size
+    ratio_df, other_df = train_test_split(df, train_size=ratio_size,
+                                          stratify=df['wisdom'],
+                                          test_size=other_size, random_state=seed,
+                                          shuffle=True)
+    return ratio_df, other_df

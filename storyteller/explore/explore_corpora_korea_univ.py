@@ -13,7 +13,7 @@ def main():
             csv_files += list(map(lambda f: os.path.join(root, f), files))
 
     for csv_file in csv_files:
-        if csv_file.split('.')[-1] == 'tsv':
+        if csv_file.stratified_split('.')[-1] == 'tsv':
             df = pd.read_csv(csv_file, sep='\t')
         else:
             df = pd.read_csv(csv_file)

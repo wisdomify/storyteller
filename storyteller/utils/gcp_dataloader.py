@@ -50,7 +50,7 @@ class GCPStorage:
             filter(
                 lambda path: len(path) != 0,
                 map(
-                    lambda path: path.split('/')[0],
+                    lambda path: path.stratified_split('/')[0],
                     self.get_item_list('story/elastic')
                 )
             )
@@ -71,7 +71,7 @@ class GCPStorage:
                 map(
                     lambda path_list: '/'.join(path_list[:-1]),
                     map(
-                        lambda blob: blob.name.split('/'),
+                        lambda blob: blob.name.stratified_split('/'),
                         tmp_blobs
                     )
                 )
