@@ -3,7 +3,7 @@ This is for pushing all the tsv files to wandb
 """
 
 import argparse
-from storyteller.builders import WisdomsBuilder, Wisdom2TestBuilder, Wisdom2DefBuilder, Wisdom2EgBuilder
+from storyteller.builders import WisdomsBuilder, WisdomifyTestBuilder, Wisdom2DefBuilder, Wisdom2EgBuilder
 from storyteller.connectors import connect_to_wandb
 
 
@@ -29,8 +29,8 @@ def main():
     if name == "wisdoms":
         artifact = WisdomsBuilder()(ver)
     # --- instantiate an appropriate uploader --- #
-    elif name == "wisdom2test":
-        artifact = Wisdom2TestBuilder()(ver)
+    elif name == "wisdomify_test":
+        artifact = WisdomifyTestBuilder()(ver)
     elif name == "wisdom2def":
         artifact = Wisdom2DefBuilder(train_ratio, seed)(ver)
     elif name == "wisdom2eg":

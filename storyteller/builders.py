@@ -1,7 +1,7 @@
 import wandb
 import pandas as pd
 from storyteller.connectors import connect_to_es
-from storyteller.downloaders import dl_wisdoms, dl_wisdom2test, dl_wisdom2def_raw, dl_wisdom2eg_raw
+from storyteller.downloaders import dl_wisdoms, dl_wisdomify_test, dl_wisdom2def_raw, dl_wisdom2eg_raw
 from storyteller.elastic.crud import Searcher
 from storyteller.preprocess import split_train_val, normalise, augment, upsample, parse
 
@@ -22,13 +22,13 @@ class WisdomsBuilder(ArtifactBuilder):
         return artifact
 
 
-class Wisdom2TestBuilder(ArtifactBuilder):
+class WisdomifyTestBuilder(ArtifactBuilder):
 
     def __call__(self, ver: str) -> wandb.Artifact:
-        artifact = wandb.Artifact(name="wisdom2test", type="dataset")
-        wisdom2test_df = dl_wisdom2test(ver)
-        table = wandb.Table(dataframe=wisdom2test_df)
-        artifact.add(table, name="wisdom2test")  # just wisdoms
+        artifact = wandb.Artifact(name="wisdomify_test", type="dataset")
+        wisdomify_test_df = dl_wisdomify_test(ver)
+        table = wandb.Table(dataframe=wisdomify_test_df)
+        artifact.add(table, name="wisdomify_test")  # just wisdoms
         return artifact
 
 
