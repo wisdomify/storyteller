@@ -14,7 +14,7 @@ def parse(df: pd.DataFrame) -> pd.DataFrame:
     :param df:
     :return:
     """
-    # TODO: implement parsing
+
     return df
 
 
