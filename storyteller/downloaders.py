@@ -25,7 +25,7 @@ def dl_wisdoms(ver: str) -> pd.DataFrame:
     return pd.read_csv(io.StringIO(text), delimiter="\t")
 
 
-def dl_wisdomify_test(ver: str) -> pd.DataFrame:
+def dl_wisdom2query_raw(ver: str) -> pd.DataFrame:
     if ver == "v0":
         text = dl_from_url(WISDOM2TEST_V0)
     else:
