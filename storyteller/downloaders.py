@@ -5,7 +5,7 @@ import json
 from tqdm import tqdm
 from storyteller.elastic.crud import Searcher
 from storyteller.elastic.docs import Story
-from storyteller.secrets import WISDOMS_V0, WISDOMS_V1, WISDOMIFY_TEST_V0, WISDOM2DEF_RAW_V0
+from storyteller.urls import WISDOM2DEF_RAW_V0, WISDOM2TEST_V0, WISDOMS_V1, WISDOMS_V0, WISDOM2DEF_RAW_V1
 
 
 def dl_from_url(url: str) -> str:
@@ -27,7 +27,7 @@ def dl_wisdoms(ver: str) -> pd.DataFrame:
 
 def dl_wisdom2test(ver: str) -> pd.DataFrame:
     if ver == "v0":
-        text = dl_from_url(WISDOMIFY_TEST_V0)
+        text = dl_from_url(WISDOM2TEST_V0)
     else:
         raise ValueError
     return pd.read_csv(io.StringIO(text), delimiter="\t")
@@ -36,6 +36,8 @@ def dl_wisdom2test(ver: str) -> pd.DataFrame:
 def dl_wisdom2def_raw(ver: str) -> pd.DataFrame:
     if ver == "v0":
         text = dl_from_url(WISDOM2DEF_RAW_V0)
+    elif ver == "v1":
+        text = dl_from_url(WISDOM2DEF_RAW_V1)
     else:
         raise ValueError
     return pd.read_csv(io.StringIO(text), delimiter="\t")
