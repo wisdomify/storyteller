@@ -25,6 +25,7 @@ def get_highlighted_hits(df: pd.DataFrame) -> pd.DataFrame:
         lambda hit: convert_em_to_wisdom(hit['highlight']['sents'][0]),
         json.loads(df['eg'])['hits']['hits']
     ))
+
     return df
 
 
