@@ -3,7 +3,7 @@ This is for pushing all the tsv files to wandb
 """
 
 import argparse
-from storyteller.builders import WisdomsBuilder, Wisdom2QueryBuilder, Wisdom2DefBuilder, Wisdom2EgBuilder
+from storyteller.artifacts import WisdomsBuilder, Wisdom2QueryBuilder, Wisdom2DefBuilder, Wisdom2EgBuilder
 from storyteller.connectors import connect_to_wandb
 
 
