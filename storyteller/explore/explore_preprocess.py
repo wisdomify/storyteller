@@ -4,7 +4,7 @@ import re
 import pandas as pd
 
 from storyteller.paths import DATA_DIR
-from storyteller.preprocess import parse
+from storyteller.preprocess import parse, normalise
 
 
 def explore_preprocess_parse():
@@ -21,6 +21,22 @@ def explore_convert_em_to_wisdom():
     print(t)
 
 
+def explore_preprocess_normalise_emoticon():
+    raw_df = pd.read_csv(os.path.join(DATA_DIR, 'tmp.tsv'), sep='\t')
+    parsed_df = parse(raw_df)
+    normalised_df = normalise(parsed_df)
+
+    print(normalised_df)
+
+
+def explore_emoticon_normalise():
+    wisdom = '가는 날이 장날'
+    highlighted_sent = ''
+    t = re.sub(r"<em>.*</em>", "[WISDOM]", highlighted_sent)
+    print(t)
+
+
 if __name__ == '__main__':
     # explore_convert_em_to_wisdom()
-    explore_preprocess_parse()
+    # explore_preprocess_parse()
+    explore_preprocess_normalise_emoticon()
