@@ -47,8 +47,6 @@ def normalise(df: pd.DataFrame) -> pd.DataFrame:
     :param df:
     :return:
     """
-    # TODO: normalise spacing (soyspacing)
-    # TODO: normalise grammar errors (py-hanspell)
 
     # =============== normalise emoticons and shorts =============== #
     df['eg'] = df['eg'].apply(lambda r: re.sub('\.*!+', '!', r))  # (....)! match
