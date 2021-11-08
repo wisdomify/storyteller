@@ -60,7 +60,11 @@ def normalise(df: pd.DataFrame) -> pd.DataFrame:
 
     df['eg'] = df['eg'].apply(lambda r: emoticon_normalize(only_text(r), num_repeats=1))
 
+    # ===================== normalise spacing ===================== #
+    df['eg'] = df['eg'].apply(lambda r: re.sub('\s+', ' ', r))  # multiple spacing match
 
+    # ==================== grammar error check +=================== #
+    df['eg'] = df['eg'].apply(lambda r: re.sub('\s+', ' ', r))  # multiple spacing match
 
     return df
 
