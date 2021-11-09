@@ -1,11 +1,11 @@
 import io
-import pandas as pd
 import wandb
+import pandas as pd
 from metaflow import FlowSpec, step, Parameter
 from wandb.integration.metaflow import wandb_log
 from storyteller.constants import WISDOM2DEF_RAW_A, WISDOM2DEF_RAW_B, WANDB_PROJECT
 from storyteller.preprocess import cleanse, normalise, augment, upsample
-from storyteller.utils import get
+from storyteller.utils import get_url
 
 
 class BuildWisdom2DefFlow(FlowSpec):
@@ -30,9 +30,9 @@ class BuildWisdom2DefFlow(FlowSpec):
         ver  -> raw_df
         """
         if self.ver == "a":
-            text = get(WISDOM2DEF_RAW_A)
+            text = get_url(WISDOM2DEF_RAW_A)
         elif self.ver == "b":
-            text = get(WISDOM2DEF_RAW_B)
+            text = get_url(WISDOM2DEF_RAW_B)
         else:
             raise ValueError
         self.raw_df = pd.read_csv(io.StringIO(text), delimiter="\t")

@@ -10,7 +10,7 @@ from google.cloud import storage
 from google.cloud.storage import Blob
 
 
-def get(url: str) -> str:
+def get_url(url: str) -> str:
     r = requests.get(url)
     r.raise_for_status()
     r.encoding = 'utf-8'

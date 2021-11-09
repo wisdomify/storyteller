@@ -3,7 +3,7 @@ import wandb
 import pandas as pd
 from wandb.integration.metaflow import wandb_log
 from metaflow import FlowSpec, step, Parameter
-from storyteller.utils import get
+from storyteller.utils import get_url
 from storyteller.constants import WISDOMS_A, WISDOMS_B, WANDB_PROJECT
 
 
@@ -28,9 +28,9 @@ class BuildWisdomsFlow(FlowSpec):
         ver  -> all_df
         """
         if self.ver == "a":
-            text = get(WISDOMS_A)
+            text = get_url(WISDOMS_A)
         elif self.ver == "b":
-            text = get(WISDOMS_B)
+            text = get_url(WISDOMS_B)
         else:
             raise ValueError
         self.all_df = pd.read_csv(io.StringIO(text), delimiter="\t")

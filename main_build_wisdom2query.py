@@ -3,7 +3,7 @@ import wandb
 import pandas as pd
 from metaflow import FlowSpec, step, Parameter
 from wandb.integration.metaflow import wandb_log
-from storyteller.utils import get
+from storyteller.utils import get_url
 from storyteller.constants import WISDOM2QUERY_RAW_A, WANDB_PROJECT
 from storyteller.preprocess import cleanse, normalise, stratified_split
 
@@ -43,7 +43,7 @@ class BuildWisdom2QueryFlow(FlowSpec):
         ver  -> raw_df
         """
         if self.ver == "a":
-            text = get(WISDOM2QUERY_RAW_A)
+            text = get_url(WISDOM2QUERY_RAW_A)
         else:
             raise ValueError
         self.raw_df = pd.read_csv(io.StringIO(text), delimiter="\t")
