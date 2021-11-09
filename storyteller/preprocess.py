@@ -50,7 +50,7 @@ def normalise(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def upsample(df: pd.DataFrame) -> pd.DataFrame:
+def upsample(df: pd.DataFrame, seed: int) -> pd.DataFrame:
     counts = df.groupby(by='wisdom').count().sort_values(by='eg', ascending=False)['eg']
     major_count = counts.values[0]
     major_wisdom = counts.index[0]
@@ -61,7 +61,7 @@ def upsample(df: pd.DataFrame) -> pd.DataFrame:
         df_minority_upsampled = resample(df[df['wisdom'] == wis],
                                          replace=True,  # sample with replacement
                                          n_samples=major_count,  # to match majority class
-                                         random_state=123)  # reproducible results
+                                         random_state=seed)  # reproducible results
 
         total_df = total_df.append(df_minority_upsampled)
 
