@@ -126,3 +126,6 @@ webencodings==0.5.1
 widgetsnbextension==3.5.1
 yaspin==2.1.0
 zipp==3.6.0
+
+scikit-learn~=1.0
+metaflow~=2.4.3
