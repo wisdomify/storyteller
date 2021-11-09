@@ -6,7 +6,7 @@ import json
 import pandas as pd
 from typing import Generator, List
 from elasticsearch_dsl import Document, Text, Keyword
-from storyteller.paths import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, \
+from storyteller.constants import GK_DIR, SC_DIR, MR_DIR, BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, \
     KSNS_DIR, KC_DIR, KETS_DIR, KEPT_DIR, NEWS_DIR, KOREA_UNIV_DIR
 
 
