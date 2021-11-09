@@ -1,18 +1,50 @@
-import itertools
+import json
 import os
-import shutil
+import itertools
 import zipfile
-
+import requests
+import pandas as pd
 from typing import Iterator, List
-
 from tqdm import tqdm
 from google.cloud import storage
 from google.cloud.storage import Blob
 
-from copy import copy
 
-from storyteller.paths import BS_DIR, DS_DIR, SFC_DIR, KESS_DIR, KJ_DIR, KCSS_DIR, SFKE_DIR, KSNS_DIR, KC_DIR, KETS_DIR, \
-    KEPT_DIR
+def get(url: str) -> str:
+    r = requests.get(url)
+    r.raise_for_status()
+    r.encoding = 'utf-8'
+    return r.text
+
+
+def get_files(on: str):
+    jsons = list()
+    for root, sub_dirs, files in os.walk(on):
+        if files:
+            jsons += list(map(lambda file: os.path.join(root, file), files))
+
+    return jsons
+
+
+def merge_json_files(on: str, to: str):
+    result = list()
+    files = get_files(on)
+    print(len(files))
+    for i, f1 in enumerate(files):
+        print(i, end=' ')
+        try:
+            if 'csv' in f1:
+                df = pd.read_csv(f1)
+                result.append(df.to_dict('records'))
+
+            elif 'xlsx' in f1:
+                df = pd.read_excel(f1)
+                result.append(df.to_dict('records'))
+        except:
+            continue
+
+    with open(to, 'w', encoding='UTF-8-sig') as output_file:
+        json.dump(result, output_file, ensure_ascii=False, default=str)
 
 
 class GCPStorage:
@@ -148,10 +180,4 @@ class GCPStorage:
 
             if unzip:
                 self._unzip_file(blob, to)
-
-
-if __name__ == '__main__':
-    gcp_storage = GCPStorage('wisdomify')
-    gcp_storage.download('story/elastic/한국어-영어 번역(병렬) 말뭉치', KEPT_DIR, unzip=True)
-
 
