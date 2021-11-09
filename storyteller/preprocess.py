@@ -1,8 +1,13 @@
 import json
 import re
-from typing import Tuple
+
 import pandas as pd
+
+from typing import Tuple
 from sklearn.model_selection import train_test_split
+from soynlp.normalizer import emoticon_normalize, only_text
+
+from storyteller.utils.grammar_checker import check_grammar
 
 
 def augment(df: pd.DataFrame) -> pd.DataFrame:
@@ -43,7 +48,25 @@ def normalise(df: pd.DataFrame) -> pd.DataFrame:
     :param df:
     :return:
     """
-    # TODO: implement normalisation
+
+    # =============== normalise emoticons and shorts =============== #
+    df['eg'] = df['eg'].apply(lambda r: re.sub('\.*!+', '!', r))  # (....)! match
+    df['eg'] = df['eg'].apply(lambda r: re.sub('\.*\?+', '?', r))  # (....)? match
+    df['eg'] = df['eg'].apply(lambda r: re.sub('\.+', '.', r))  # (....). match
+    df['eg'] = df['eg'].apply(lambda r: re.sub(',+', ',', r))  # (,,,,), match
+    # ㄱ-ㅎ이 따로 쓰일 경우를 대비해 ㄱ-ㅎ을 매칭시키게했었으나
+    # ㅋ가 3번 사용한경우는 emoticon_normalise 에 걸리지 않아 자음 단독으로 쓰인 경우도 제거
+    df['eg'] = df['eg'].apply(lambda r: re.sub('[^A-Za-z0-9가-힣\s\[\].,!?\"\']', '', r))
+
+    df['eg'] = df['eg'].apply(lambda r: emoticon_normalize(only_text(r), num_repeats=1))
+
+    # ===================== normalise spacing ===================== #
+    df['eg'] = df['eg'].apply(lambda r: re.sub('\s+', ' ', r))  # multiple spacing match
+
+    # ==================== grammar error check +=================== #
+
+    df['eg'] = df['eg'].apply(lambda r: check_grammar(r))  # grammar check
+
     return df
 
 
