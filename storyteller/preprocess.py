@@ -6,7 +6,8 @@ import pandas as pd
 from typing import Tuple
 from sklearn.model_selection import train_test_split
 from soynlp.normalizer import emoticon_normalize, only_text
-from hanspell import spell_checker
+
+from storyteller.utils.grammar_checker import check_grammar
 
 
 def augment(df: pd.DataFrame) -> pd.DataFrame:
@@ -63,10 +64,8 @@ def normalise(df: pd.DataFrame) -> pd.DataFrame:
     df['eg'] = df['eg'].apply(lambda r: re.sub('\s+', ' ', r))  # multiple spacing match
 
     # ==================== grammar error check +=================== #
-    # py-hanspell을 설치해야하는 데 pip으로 설치하면 이전 버전의 pip으로 실행되서 에러가 발생한다.
-    # 반드시 해당 프로젝트의 리포를 클론후 storyteller 프로젝트 환경이 활성화되어 있는 상태에서 `python3 setup.py install`을 실행해야한다.
-    # 이 스텝이 가장 time consuming 한데 흠...
-    df['eg'] = df['eg'].apply(lambda r: spell_checker.check(r).checked)  # grammar check
+
+    df['eg'] = df['eg'].apply(lambda r: check_grammar(r))  # grammar check
 
     return df
 
