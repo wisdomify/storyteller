@@ -4,6 +4,8 @@ import re
 import pandas as pd
 
 from typing import Tuple
+
+from sklearn.utils import resample
 from sklearn.model_selection import train_test_split
 from soynlp.normalizer import emoticon_normalize, only_text
 
@@ -70,9 +72,22 @@ def normalise(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def upsample(df: pd.DataFrame) -> pd.DataFrame:
-    # TODO: implement upsampling
-    return df
+def upsample(df: pd.DataFrame, seed: int) -> pd.DataFrame:
+    counts = df.groupby(by='wisdom').count().sort_values(by='eg', ascending=False)['eg']
+    major_count = counts.values[0]
+    major_wisdom = counts.index[0]
+
+    # Upsample minority class
+    total_df = df.loc[df['wisdom'] == major_wisdom]
+    for wis, ct in counts[1:].items():
+        df_minority_upsampled = resample(df[df['wisdom'] == wis],
+                                         replace=True,  # sample with replacement
+                                         n_samples=major_count,  # to match majority class
+                                         random_state=seed)  # reproducible results
+
+        total_df = total_df.append(df_minority_upsampled)
+
+    return total_df
 
 
 def split_train_val(df: pd.DataFrame, train_ratio: float, seed: int) -> Tuple[pd.DataFrame, pd.DataFrame]:

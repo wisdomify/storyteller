@@ -62,7 +62,7 @@ class Wisdom2DescBuilder(ArtifactBuilder):
         raise NotImplementedError
 
     @staticmethod
-    def preprocess(raw_df: pd.DataFrame) -> pd.DataFrame:
+    def preprocess(raw_df: pd.DataFrame, seed: int) -> pd.DataFrame:
         raise NotImplementedError
 
 
@@ -97,8 +97,8 @@ class Wisdom2EgBuilder(Wisdom2DescBuilder):
         return dl_wisdom2eg_raw(ver, searcher)
 
     @staticmethod
-    def preprocess(raw_df: pd.DataFrame) -> pd.DataFrame:
+    def preprocess(raw_df: pd.DataFrame, seed: int) -> pd.DataFrame:
         return raw_df.pipe(parse)\
                      .pipe(normalise)\
                      .pipe(augment)\
-                     .pipe(upsample)
+                     .pipe(upsample, seed=seed)
